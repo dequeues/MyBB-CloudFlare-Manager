@@ -66,7 +66,6 @@ function cloudflare_action_handler($action)
 		'challenge' => array('active' => 'challenge', 'file' => 'cloudflare_challenge.php'),
 		'change_log' => array('active' => 'change_log', 'file' => 'cloudflare_change_log.php'),
 		'recent_visitors_48' => array('active' => 'recent_visitors_48', 'file' => 'cloudflare_recent_visitors_48.php'),
-		'check_calls' => array('active' => 'check_calls', 'file' => 'cloudflare_check_calls.php'),
 		'update_snapshot' => array('active' => 'update_snapshot', 'file' => 'cloudflare_update_snapshot.php'),
 		'ipv46' => array('active' => 'ipv46', 'file' => 'cloudflare_ipv46.php'),
 		'topthreats' => array('active' => 'topthreats', 'file' => 'cloudflare_topthreats.php'),
