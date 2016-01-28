@@ -24,6 +24,8 @@ if(!$mybb->input['action'])
 			flash_message("Could not get zone ID: {$zone_id['error']}", "error");
 			die();
 		}
+
+		$cache->update('cloudflare_zone_id', $zone_id['zone_id']);
 	}
 
 	$sub_tabs['overview'] = array(
