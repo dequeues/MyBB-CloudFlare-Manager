@@ -15,7 +15,7 @@ if(!$mybb->input['action'])
 	$plugins->run_hooks("admin_cloudflare_overview_start");
 
 	$page->output_header("CloudFlare Manager - Overview");
-	$cache->delete('cloudflare_zone_id');
+	
 	if (!$cache->read('cloudflare_zone_id'))
 	{
 		$zone_id = get_cloudflare_zone_id();
