@@ -30,8 +30,8 @@ function cloudflare_info()
 		'website'		=> 'http://www.mybbsecurity.net/',
 		'author'		=> 'MyBB Security Group',
 		'authorsite'	=> 'http://www.mybbsecurity.net/',
-		'version'		=> '1.0-beta 3.1',
-		"compatibility" => "16*"
+		'version'		=> '2.0-beta',
+		"compatibility" => "18*"
 	);
 }
 
@@ -82,7 +82,7 @@ function cloudflare_install()
 		),
 		"cloudflare_api" => array(
 			"title"			=> "API Key",
-			"description"	=> "Your CloudFlare API key",
+			"description"	=> "Your CloudFlare API key. You can get this key <a href=\"https://www.cloudflare.com/a/account/my-account\">here</a>",
 			"optionscode"	=> "text",
 			"value"			=> 123456789,
 			"disporder"		=> ++$dispnum

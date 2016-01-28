@@ -38,7 +38,6 @@ White Listing an IP address means that the computer won\'t be denied access by C
 }
 elseif($mybb->input['action'] == "run")
 {
-	die("wat");
 	if(!verify_post_check($mybb->input['my_post_key']))
 	{
 		flash_message($lang->invalid_post_verify_key2, 'error');

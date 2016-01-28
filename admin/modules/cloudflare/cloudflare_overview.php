@@ -140,17 +140,6 @@ if(!$mybb->input['action'])
 
 	$table->output("Past Day's Traffic");
 
-	$table->construct_header("Latest Tweet");
-	$table->construct_cell(latest_news_twitter());
-	$table->construct_row();
-
-	$table->output("Latest From <a href=\"http://twitter.com/cloudflare\" target=\"_blank\">@CloudFlare</a>");
-
-	$table->construct_header("Latest Tweet");
-	$table->construct_cell(latest_status_twitter());
-	$table->construct_row();
-
-	$table->output("Latest From <a href=\"http://twitter.com/cloudflaresys\" target=\"_blank\">@CloudFlareSys</a>");
 
 	$page->output_footer();
 }
