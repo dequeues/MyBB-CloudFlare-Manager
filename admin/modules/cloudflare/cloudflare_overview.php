@@ -15,7 +15,7 @@ if(!$mybb->input['action'])
 	$plugins->run_hooks("admin_cloudflare_overview_start");
 
 	$page->output_header("CloudFlare Manager - Overview");
-
+	$cache->delete('cloudflare_zone_id');
 	if (!$cache->read('cloudflare_zone_id'))
 	{
 		$zone_id = get_cloudflare_zone_id();
@@ -27,6 +27,7 @@ if(!$mybb->input['action'])
 
 		$cache->update('cloudflare_zone_id', $zone_id['zone_id']);
 	}
+
 
 	$sub_tabs['overview'] = array(
 		'title' => "Overview",
@@ -56,61 +57,30 @@ if(!$mybb->input['action'])
 		flash_message("Your nameservers are not set correctly. Please change them to match the ones provided to you by CloudFlare.", "error");
 	}
 
-	$today = objectToArray(cloudflare_statistics(40)->response);
+	$today_request = cloudflare_statistics($cache->read('cloudflare_zone_id'), -1440); // see https://api.cloudflare.com/#zone-analytics-dashboard
+	$today_results = array(
+		'pageviews' => $today_request->result->totals->pageviews->all,
+		'uniques' => $today_request->result->totals->uniques->all,
+		'threats' => $today_request->result->totals->threats->all,
+		'bandwidth' => $today_request->result->totals->bandwidth->all,
+		'bandwidth_cached' => $today_request->result->totals->bandwidth->cached
+	);
 
-	foreach($today['result'] as $n => $data) {
-		$stats = $data[0];
-
-		$pageviews = $stats['trafficBreakdown'];
-		$pageviews = $pageviews['pageviews'];
-
-		$unique = $stats['trafficBreakdown'];
-		$unique = $unique['uniques'];
-
-		$threats = $unique['threat'];
-
-		$unique = $unique['regular'] + $unique['crawler'] + $unique['threat'];
-		$pageviews = $pageviews['regular'] + $pageviews['crawler'] + $pageviews['threat'];
-
-		$bandwidth_today = $stats['bandwidthServed'];
-		$total_bandwidth_today = $bandwidth_today['user'];
-		$total_bandwidth_today = (int)$total_bandwidth_today * 1024;
-		$total_bandwidth_today = get_friendly_size($total_bandwidth_today);
-
-		$requests_today = $stats['requestsServed'];
-
-		$total_requests_today = my_number_format($requests_today['cloudflare']);
-		$sent_requests_today = my_number_format($requests_today['user']);
-		$saved_requests_today = my_number_format($requests_today['cloudflare'] - $requests_today['user']);
-	}
-
-	$month = objectToArray(cloudflare_statistics(20)->response);
-
-	foreach($month['result'] as $n => $data) {
-		$stats = $data[0];
-
-		$bandwidth_month = $stats['bandwidthServed'];
-		$total_bandwidth_month = $bandwidth_month['user'];
-		$total_bandwidth_month = (int)$total_bandwidth_month * 1024;
-
-		$bandwidth_sent_month = $bandwidth_month['user'];
-		$bandwidth_sent_month = $total_bandwidth_month - (int)$bandwidth_month['cloudflare'] * 1024;
-		$saved_bandwidth_month = $total_bandwidth_month - $bandwidth_sent_month;
-		//$bandwidth_percent_month_saved = round((4.4 / 98.5) * 100);
-
-	}
-
-		$bandwidth_percent_total_month = $total_bandwidth_month;
-		$bandwidth_percent_month_saved = round(((float) get_friendly_size($saved_bandwidth_month / $bandwidth_percent_total_month)) * 100);
-
-	echo '<div class="success" id="flash_message">CloudFlare has saved '.get_friendly_size($saved_bandwidth_month).' of bandwidth this month, '.$bandwidth_percent_month_saved.'% of your total bandwidth usage.</div>';
+	$week_request = cloudflare_statistics($cache->read('cloudflare_zone_id'), -10080);
+	$week_results = array (
+		'pageviews' => $week_request->result->totals->pageviews->all,
+		'uniques' => $week_request->result->totals->uniques->all,
+		'threats' => $week_request->result->totals->threats->all,
+		'bandwidth' => $week_request->result->totals->bandwidth->all,
+		'bandwidth_cached' => $week_request->result->totals->bandwidth->cached
+	);
 
 	$table = new Table;
 	$table->construct_header("API Details", array("colspan" => 2));
 	$table->construct_header("", array("colspan" => 2));
 
 	$table->construct_cell("<strong>API URL</strong>", array('width' => '25%'));
-	$table->construct_cell("https://www.cloudflare.com/api_json.html", array('width' => '25%'));
+	$table->construct_cell("https://api.cloudflare.com/client/v4/", array('width' => '25%'));
 	$table->construct_cell("<strong>Plugin Version</strong>", array('width' => '200'));
 	$table->construct_cell(get_version(), array('width' => '200'));
 	$table->construct_row();
@@ -135,21 +105,39 @@ if(!$mybb->input['action'])
 
 	$table->output("General Information");
 
+	// Today
 	$table = new Table;
 	$table->construct_header("Page Views");
-	$table->construct_cell(my_number_format($pageviews));
+	$table->construct_cell(my_number_format($today_results['pageviews']));
 
 	$table->construct_header("Unique Visitors");
-	$table->construct_cell(my_number_format($unique));
+	$table->construct_cell(my_number_format($today_results['uniques']));
 
 	$table->construct_header("Bandwidth Usage");
-	$table->construct_cell($total_bandwidth_today);
+	$table->construct_cell("Total: {$today_results['bandwidth']} ({$today_results['bandwidth_cached']} cached)");
 
 	$table->construct_header("Threats");
-	$table->construct_cell('<strong><span style="color: red;">'.my_number_format($threats).'</span></strong>');
+	$table->construct_cell("<span style=\"color: red;font-weight:bold;\">{$today_results['threats']}</span>");
 	$table->construct_row();
 
-	$table->output("Past Day's Traffic");
+	$table->output("Todays Traffic");
+
+	// Weekly
+	$table = new Table;
+	$table->construct_header("Page Views");
+	$table->construct_cell(my_number_format($week_results['pageviews']));
+
+	$table->construct_header('Unique Visitors');
+	$table->construct_cell(my_number_format($week_results['uniques']));
+
+	$table->construct_header('Bandwidth Usage');
+	$table->construct_cell("Total: {$today_results['bandwidth']} ({$today_results['bandwidth_cached']} cached)");
+
+	$table->construct_header('Threats');
+	$table->construct_cell("<span style=\"color: red;font-weight:bold;\">{$week_results['threats']}</span>");
+	$table->construct_row();
+
+	$table->output('Monthly Traffic');
 
 
 	$page->output_footer();
