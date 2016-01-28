@@ -123,8 +123,8 @@ if(!$mybb->input['action'])
 
 	$table->construct_cell("<strong>Email Address</strong>", array('width' => '25%'));
 	$table->construct_cell(htmlspecialchars_uni($mybb->settings['cloudflare_email']), array('width' => '25%'));
-	$table->construct_cell("<strong>API Requests</strong>", array('width' => '25%'));
-	$table->construct_cell(my_number_format($cloudflare->fetch_calls($cache)) . "/1,200 Left (<a href=\"index.php?module=cloudflare-check_calls&my_post_key={$mybb->post_code}\">Check</a>)", array('width' => '25%'));
+	$table->construct_cell('<strong>Zone ID</strong>', array('width' => '25%'));
+	$table->construct_cell($cache->read('cloudflare_zone_id'), array('width' => '25%'));
 	$table->construct_row();
 
 	$table->construct_cell("<strong>API Key</strong>", array('width' => '200'));
