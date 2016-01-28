@@ -158,32 +158,4 @@ if(!$mybb->input['action'])
 		return false;
 	}
 
-	function latest_news_twitter()
-	{
-		$tweet = @simplexml_load_file("http://api.twitter.com/1/statuses/user_timeline/cloudflare.xml");
-
-		if($tweet)
-		{
-			return preg_replace('/(^|\s)@([a-z0-9_]+)/i', '$1<a href="http://twitter.com/$2" target="_blank">@$2</a>', $tweet->status[0]->text) . ' (' . date('H:i, jS F', strtotime($tweet->status[0]->created_at)) . ')';
-		}
-		else
-		{
-			return "Error: Could not retrieve data.";
-		}
-	}
-
-	function latest_status_twitter()
-	{
-		$tweet = @simplexml_load_file("http://api.twitter.com/1/statuses/user_timeline/cloudflaresys.xml");
-
-		if($tweet)
-		{
-			return preg_replace('/(^|\s)@([a-z0-9_]+)/i', '$1<a href="http://twitter.com/$2" target="_blank">@$2</a>', $tweet->status[0]->text) . ' (' . date('H:i, jS F', strtotime($tweet->status[0]->created_at)) . ')';
-		}
-		else
-		{
-			return "Error: Could not retrieve data.";
-		}
-	}
-
 ?>
