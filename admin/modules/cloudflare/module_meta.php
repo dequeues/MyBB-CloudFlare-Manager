@@ -9,16 +9,20 @@ if(!defined("IN_MYBB"))
 
 function cloudflare_meta()
 {
-	global $mybb, $page, $plugins;
-
+	global $mybb, $page, $plugins, $cache;
 	if($mybb->input['module'] == 'cloudflare')
 	{
-		      if(cloudflare_is_installed() == false)
-		      {
-			  flash_message('CloudFlare Manager hasn\'t been installed. Please install it before continuing.', 'error');
-			  admin_redirect("index.php?module=config-plugins");
-			  exit;
-		      }
+		if(cloudflare_is_installed() == false)
+		{
+			flash_message('CloudFlare Manager hasn\'t been installed. Please install it before continuing.', 'error');
+			admin_redirect("index.php?module=config-plugins");
+			exit;
+		}
+	}
+
+	if (!$cache->read("cloudflare_zone_id"))
+	{
+		get_cloudflare_zone_id();
 	}
 
 	$sub_menu = array();
@@ -34,7 +38,7 @@ function cloudflare_meta()
 
 function cloudflare_action_handler($action)
 {
-	global $page, $plugins;
+	global $page, $plugins, $cache;
 
 	$page->active_module = "cloudflare";
 
@@ -150,6 +154,17 @@ function cloudflare_action_handler($action)
 
 	$page->sidebar .= $sidebar4->get_markup();
 
+
+	if (!$cache->read('cloudflare_zone_id'))
+	{
+		$zone_id = get_cloudflare_zone_id();
+		if (isset($zone_id['error']))
+		{
+			$page->active_action = "overview";
+			return "cloudflare_overview.php";
+		}
+	}
+
 	if(isset($actions[$action]))
 	{
 		$page->active_action = $actions[$action]['active'];
@@ -187,7 +202,7 @@ class cloudflare {
 	public $zone = '';
 	private $api_key = '';
 	public $email = '';
-	public $api_url = 'https://www.cloudflare.com/api_json.html';
+	public $api_url = 'https://api.cloudflare.com/client/v4/';
 
 	public function __construct(MyBB $mybb) {
 		$this->zone = $mybb->settings['cloudflare_domain'];
@@ -195,39 +210,53 @@ class cloudflare {
 		$this->email = $mybb->settings['cloudflare_email'];
 	}
 
-	public function request($data, $useragent, $api_url = null)
+	public function request($request_data)
 	{
-		if($api_url === null)
-		{
-			$api_url = $this->api_url;
-		}
-
 		$ch = curl_init();
 
+		if (isset($request_data['method']) &&  isset($request_data['post_data']) && $request_data['method'] == "POST")
+		{
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $request_data['post_data']);
+		}
+
+		$url = $this->api_url . $request_data['endpoint'];
+
+		if (isset($request_data['url_parameters']))
+		{
+			$url = $url . "?". http_build_query($request_data['url_parameters']);
+		}
+
 		curl_setopt($ch, CURLOPT_VERBOSE, 1);
-		curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
-		curl_setopt($ch, CURLOPT_URL, $this->api_url);
+		curl_setopt($ch, CURLOPT_USERAGENT, "MyBB CloudFlare Manager Plugin");
+		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_HTTPHEADER,
+			array(
+				"X-Auth-Key: {$this->api_key}",
+				"X-Auth-Email: {$this->email}",
+				'Content-Type: application/json'
+			)
+		);
 
 		$http_result = curl_exec($ch);
+
 		$error = curl_error($ch);
 
 		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 		curl_close($ch);
 
+		return json_decode($http_result);
 		if($http_code != 200)
 		{
-			die("Error: $error\n");
+			//die("Error: $error\n");
 		}
 		else
 		{
 			$json = json_decode($http_result);
-			return $json;
    		}
 	}
 
@@ -452,6 +481,22 @@ class cloudflare {
 }
 
 $cloudflare = new cloudflare($mybb);
+
+function get_cloudflare_zone_id()
+{
+	global $mybb, $cloudflare;
+
+	$data = $cloudflare->request(
+		array(
+			'endpoint' => 'zones',
+			'url_parameters' => array (
+				'name' => $mybb->settings['cloudflare_domain']
+			)
+		)
+	);
+
+	return (isset($data->result[0]->id) ? array("zone_id" => $data->result[0]->id) : array("error" => $data->errors[0]->message));
+}
 
 function cloudflare_statistics($interval = 10)
 {

@@ -16,6 +16,16 @@ if(!$mybb->input['action'])
 
 	$page->output_header("CloudFlare Manager - Overview");
 
+	if (!$cache->read('cloudflare_zone_id'))
+	{
+		$zone_id = get_cloudflare_zone_id();
+		if (isset($zone_id['error']))
+		{
+			flash_message("Could not get zone ID: {$zone_id['error']}", "error");
+			die();
+		}
+	}
+
 	$sub_tabs['overview'] = array(
 		'title' => "Overview",
 		'link' => "index.php?module=cloudflare-overview",
@@ -43,7 +53,6 @@ if(!$mybb->input['action'])
 	{
 		flash_message("Your nameservers are not set correctly. Please change them to match the ones provided to you by CloudFlare.", "error");
 	}
-
 
 	$today = objectToArray(cloudflare_statistics(40)->response);
 
