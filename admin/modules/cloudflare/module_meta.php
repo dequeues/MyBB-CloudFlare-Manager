@@ -213,10 +213,16 @@ class cloudflare {
 	{
 		$ch = curl_init();
 
-		if (isset($request_data['method']) &&  isset($request_data['post_data']) && $request_data['method'] == "POST")
+		if (isset($request_data['method']) &&  isset($request_data['post_data']) && $request_data['method'] == 'POST')
 		{
 			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $request_data['post_data']);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['post_data']));
+		}
+
+		if (isset($request_data['method']) && isset($request_data['patch_data']) && $request_data['method'] == 'PATCH')
+		{
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['patch_data']));
 		}
 
 		$url = $this->api_url . $request_data['endpoint'];
@@ -570,50 +576,36 @@ function cloudflare_threat_score($ip)
    }
 }
 
-function cloudflare_dev_mode()
+function cloudflare_dev_mode($zoneid, $trigger = false)
 {
-	global $mybb;
+	global $mybb, $cloudflare;
 
-	$url = "https://www.cloudflare.com/api_json.html";
-
-	$data = array(
-		"a" => "stats",
-		"email" => $mybb->settings['cloudflare_email'],
-		"z" => $mybb->settings['cloudflare_domain'],
-		"tkn" => $mybb->settings['cloudflare_api'],
-		"interval" => 10,
-	);
-
-	$ch = curl_init();
-
-	curl_setopt($ch, CURLOPT_VERBOSE, 1);
-	curl_setopt($ch, CURLOPT_USERAGENT, "MyBB/CloudFlare-Plugin(DevMode)");
-	curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-	$http_result = curl_exec($ch);
-	$error = curl_error($ch);
-
-	$http_code = curl_getinfo($ch ,CURLINFO_HTTP_CODE);
-
-	curl_close($ch);
-
-	if($http_code != 200)
+	$endpoint = "zones/{$zoneid}/settings/development_mode";
+	if (!$trigger)
 	{
-		echo "Error: $error\n";
+		$data = $cloudflare->request(
+			array (
+				'endpoint' => $endpoint
+			)
+		);
+
+		return $data;
 	}
+
 	else
 	{
-		$json = json_decode($http_result);
-		//echo "<div id='debug'>" . print_r($json) . "</div>";
+		$data = $cloudflare->request(
+			array (
+				'endpoint' => $endpoint,
+				'method' => 'PATCH',
+				'patch_data' => array (
+					'value' => 'on'
+				)
+			)
+		);
 
-		return objectToArray($json->response->result->objs[0]->dev_mode);
-   }
+		return $data;
+	}
 }
 
 function cloudflare_security_level()
