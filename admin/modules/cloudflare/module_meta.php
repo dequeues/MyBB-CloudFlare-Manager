@@ -81,8 +81,8 @@ function cloudflare_action_handler($action)
 
 	$sub_menu = array();
 	$sub_menu['Access'] = array(
-		10 => array("id" => "blacklist", "title" => "Black List", "link" => "index.php?module=cloudflare-blacklist"),
-		20 => array("id" => "whitelist", "title" => "White List", "link" => "index.php?module=cloudflare-whitelist"),
+		10 => array("id" => "whitelist", "title" => "White List", "link" => "index.php?module=cloudflare-whitelist"),
+		20 => array("id" => "blacklist", "title" => "Black List", "link" => "index.php?module=cloudflare-blacklist"),
 		30 => array("id" => "challenge", "title" => "Challenge", "link" => "index.php?module=cloudflare-challenge"),
 		40 => array("id" => "ipv46", "title" => "IPv6 Support", "link" => "index.php?module=cloudflare-ipv46"),
 		50 => array("id" => "whois", "title" => "Whois Lookup", "link" => "index.php?module=cloudflare-whois")
