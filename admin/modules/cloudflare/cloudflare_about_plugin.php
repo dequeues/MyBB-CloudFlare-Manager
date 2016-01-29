@@ -30,7 +30,7 @@ if(!$mybb->input['action'])
 	$table->construct_row();
 
 	$table->construct_cell("<strong>Version</strong>", array('width' => '200'));
-	$table->construct_cell(get_version() . " (Latest: " . get_latest_version() . ")", array('width' => '200'));
+	$table->construct_cell(get_version() . " (Latest: 0)", array('width' => '200')); // temp
 	$table->construct_row();
 
 	$table->output("About This Plugin");

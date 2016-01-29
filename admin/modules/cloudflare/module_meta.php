@@ -7,9 +7,14 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
+
+$zone_id = ($cache->read('cloudflare_zone_id') ? $cache->read('cloudflare_zone_id') : false);
+require_once("class/cloudflare.php");
+$cloudflare = new cloudflare($mybb, $zone_id);
+
 function cloudflare_meta()
 {
-	global $mybb, $page, $plugins, $cache;
+	global $mybb, $page, $plugins, $cache, $cloudflare;
 	if($mybb->input['module'] == 'cloudflare')
 	{
 		if(cloudflare_is_installed() == false)
@@ -22,7 +27,7 @@ function cloudflare_meta()
 
 	if (!$cache->read("cloudflare_zone_id"))
 	{
-		get_cloudflare_zone_id();
+		$cloudflare->get_cloudflare_zone_id();
 	}
 
 	$sub_menu = array();
@@ -75,83 +80,55 @@ function cloudflare_action_handler($action)
 	$actions = $plugins->run_hooks("admin_cloudflare_action_handler", $actions);
 
 	$sub_menu = array();
-	$sub_menu['10'] = array("id" => "blacklist", "title" => "Black List", "link" => "index.php?module=cloudflare-blacklist");
-	$sub_menu['20'] = array("id" => "whitelist", "title" => "White List", "link" => "index.php?module=cloudflare-whitelist");
-	$sub_menu['30'] = array("id" => "challenge", "title" => "Challenge", "link" => "index.php?module=cloudflare-challenge");
-	$sub_menu['40'] = array("id" => "ipv46", "title" => "IPv6 Support", "link" => "index.php?module=cloudflare-ipv46");
-	$sub_menu['50'] = array("id" => "whois", "title" => "Whois Lookup", "link" => "index.php?module=cloudflare-whois");
+	$sub_menu['Access'] = array(
+		10 => array("id" => "blacklist", "title" => "Black List", "link" => "index.php?module=cloudflare-blacklist"),
+		20 => array("id" => "whitelist", "title" => "White List", "link" => "index.php?module=cloudflare-whitelist"),
+		30 => array("id" => "challenge", "title" => "Challenge", "link" => "index.php?module=cloudflare-challenge"),
+		40 => array("id" => "ipv46", "title" => "IPv6 Support", "link" => "index.php?module=cloudflare-ipv46"),
+		50 => array("id" => "whois", "title" => "Whois Lookup", "link" => "index.php?module=cloudflare-whois")
+	);
 
-	$sub_menu = $plugins->run_hooks("admin_cloudflare_menu_access", $sub_menu);
+	$sub_menu['Security'] = array (
+		10 => array("id" => "cache_lvl", "title" => "Cache Level", "link" => "index.php?module=cloudflare-cache_lvl"),
+		20 => array("id" => "purge_cache", "title" => "Purge Cache", "link" => "index.php?module=cloudflare-purge_cache"),
+		30 => array("id" => "purge_preloader_cache", "title" => "Purge Preloader Cache", "link" => "index.php?module=cloudflare-purge_preloader_cache")
+	);
 
-	$sub_menu2 = array();
-	$sub_menu2['10'] = array("id" => "cache_lvl", "title" => "Cache Level", "link" => "index.php?module=cloudflare-cache_lvl");
-	$sub_menu2['20'] = array("id" => "purge_cache", "title" => "Purge Cache", "link" => "index.php?module=cloudflare-purge_cache");
-	$sub_menu2['30'] = array("id" => "purge_preloader_cache", "title" => "Purge Preloader Cache", "link" => "index.php?module=cloudflare-purge_preloader_cache");
+	$sub_menu['Data'] = array (
+		10 => array("id" => "website", "title" => "Official Website", "link" => "index.php?module=cloudflare-website"),
+		20 => array("id" => "help", "title" => "Help Page", "link" => "index.php?module=cloudflare-help"),
+		30 => array("id" => "knowledge_base", "title" => "Knowledge Base", "link" => "index.php?module=cloudflare-knowledge_base")
+	);
 
-	$sub_menu2 = $plugins->run_hooks("admin_cloudflare_menu_cache", $sub_menu2);
+	$sub_menu['Cache'] = array (
+		10 => array("id" => "about_plugin", "title" => "About Plugin", "link" => "index.php?module=cloudflare-about_plugin"),
+		20 => array("id" => "check_for_updates", "title" => "Check for Updates", "link" => "index.php?module=cloudflare-check_for_updates"),
+		30 => array("id" => "change_log", "title" => "Change Log", "link" => "index.php?module=cloudflare-change_log"),
+		40 => array("id" => "report_bug", "title" => "Report Bug", "link" => "index.php?module=cloudflare-report_bug")
+	);
 
-	$sub_menu3 = array();
-	$sub_menu3['10'] = array("id" => "website", "title" => "Official Website", "link" => "index.php?module=cloudflare-website");
-	$sub_menu3['20'] = array("id" => "help", "title" => "Help Page", "link" => "index.php?module=cloudflare-help");
-	$sub_menu3['30'] = array("id" => "knowledge_base", "title" => "Knowledge Base", "link" => "index.php?module=cloudflare-knowledge_base");
+	$sub_menu['CloudFlare Support'] = array (
+		10 => array("id" => "statistics", "title" => "Statistics", "link" => "index.php?module=cloudflare-statistics"),
+		20 => array("id" => "recent_visitors", "title" => "Recent Visitors", "link" => "index.php?module=cloudflare-recent_visitors"),
+		30 => array("id" => "update_snapshot", "title" => "Update Snapshot", "link" => "index.php?module=cloudflare-update_snapshot")
+	);
 
-	$sub_menu3 = $plugins->run_hooks("admin_cloudflare_menu_help", $sub_menu3);
-
-	$sub_menu4 = array();
-	$sub_menu4['10'] = array("id" => "about_plugin", "title" => "About Plugin", "link" => "index.php?module=cloudflare-about_plugin");
-	$sub_menu4['20'] = array("id" => "check_for_updates", "title" => "Check for Updates", "link" => "index.php?module=cloudflare-check_for_updates");
-	$sub_menu4['30'] = array("id" => "change_log", "title" => "Change Log", "link" => "index.php?module=cloudflare-change_log");
-	$sub_menu4['40'] = array("id" => "report_bug", "title" => "Report Bug", "link" => "index.php?module=cloudflare-report_bug");
-
-	$sub_men4 = $plugins->run_hooks("admin_cloudflare_menu_about", $sub_menu4);
-
-	$sub_menu5 = array();
-	$sub_menu5['10'] = array("id" => "statistics", "title" => "Statistics", "link" => "index.php?module=cloudflare-statistics");
-	$sub_menu5['20'] = array("id" => "recent_visitors", "title" => "Recent Visitors", "link" => "index.php?module=cloudflare-recent_visitors");
-	$sub_menu5['40'] = array("id" => "update_snapshot", "title" => "Update Snapshot", "link" => "index.php?module=cloudflare-update_snapshot");
-
-	$sub_menu5 = $plugins->run_hooks("admin_cloudflare_menu_data", $sub_menu5);
-
-	$sub_menu6 = array();
-	$sub_menu6['10'] = array("id" => "security_lvl", "title" => "Security Level", "link" => "index.php?module=cloudflare-security_lvl");
-	$sub_menu6['20'] = array("id" => "topthreats", "title" => "Top Threats", "link" => "index.php?module=cloudflare-topthreats");
-
-	$sub_menu6 = $plugins->run_hooks("admin_cloudflare_menu_security", $sub_menu6);
+	$sub_menu['About Plugin'] = array (
+		10 => array("id" => "security_lvl", "title" => "Security Level", "link" => "index.php?module=cloudflare-security_lvl"),
+		20 => array("id" => "topthreats", "title" => "Top Threats", "link" => "index.php?module=cloudflare-topthreats")
+	);
 
 	if(!isset($actions[$action]))
 	{
 		$page->active_action = "overview";
 	}
 
-	$sidebar = new SidebarItem("Access");
-	$sidebar->add_menu_items($sub_menu, $actions[$action]['active']);
-
-	$page->sidebar .= $sidebar->get_markup();
-
-	$sidebar6 = new SidebarItem("Security");
-	$sidebar6->add_menu_items($sub_menu6, $actions[$action]['active']);
-
-	$page->sidebar .= $sidebar6->get_markup();
-
-	$sidebar5 = new SidebarItem("Data");
-	$sidebar5->add_menu_items($sub_menu5, $actions[$action]['active']);
-
-	$page->sidebar .= $sidebar5->get_markup();
-
-	$sidebar2 = new SidebarItem("Cache");
-	$sidebar2->add_menu_items($sub_menu2, $actions[$action]['active']);
-
-	$page->sidebar .= $sidebar2->get_markup();
-
-	$sidebar3 = new SidebarItem("CloudFlare Support");
-	$sidebar3->add_menu_items($sub_menu3, $actions[$action]['active']);
-
-	$page->sidebar .= $sidebar3->get_markup();
-
-	$sidebar4 = new SidebarItem("About Plugin");
-	$sidebar4->add_menu_items($sub_menu4, $actions[$action]['active']);
-
-	$page->sidebar .= $sidebar4->get_markup();
+	foreach($sub_menu as $title => $menu)
+	{
+		$sidebar = new SideBarItem($title);
+		$sidebar->add_menu_items($menu, $actions[$action]['active']);
+		$page->sidebar .= $sidebar->get_markup();
+	}
 
 
 	if (!$cache->read('cloudflare_zone_id'))
@@ -174,348 +151,6 @@ function cloudflare_action_handler($action)
 		return "cloudflare_overview.php";
 	}
 
-}
-
-function get_version()
-{
-	$info = cloudflare_info();
-	return $info['version'];
-}
-
-function get_latest_version()
-{
-	$version = @trim(file_get_contents("http://cf.mybbsecurity.net/LATEST"));
-
-	if(!empty($version))
-	{
-		return $version;
-	}
-	else
-	{
-		return "Unknown";
-	}
-}
-
-class cloudflare {
-
-	public $zone = '';
-	private $api_key = '';
-	public $email = '';
-	public $api_url = 'https://api.cloudflare.com/client/v4/';
-
-	public function __construct(MyBB $mybb) {
-		$this->zone = $mybb->settings['cloudflare_domain'];
-		$this->api_key = $mybb->settings['cloudflare_api'];
-		$this->email = $mybb->settings['cloudflare_email'];
-	}
-
-	public function request($request_data)
-	{
-		$ch = curl_init();
-
-		if (isset($request_data['method']) &&  isset($request_data['post_data']) && $request_data['method'] == 'POST')
-		{
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['post_data']));
-		}
-
-		if (isset($request_data['method']) && isset($request_data['patch_data']) && $request_data['method'] == 'PATCH')
-		{
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
-			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['patch_data']));
-		}
-
-		$url = $this->api_url . $request_data['endpoint'];
-
-		if (isset($request_data['url_parameters']))
-		{
-			$url = $url . "?". http_build_query($request_data['url_parameters']);
-		}
-
-		curl_setopt($ch, CURLOPT_VERBOSE, 1);
-		curl_setopt($ch, CURLOPT_USERAGENT, "MyBB CloudFlare Manager Plugin");
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_HTTPHEADER,
-			array(
-				"X-Auth-Key: {$this->api_key}",
-				"X-Auth-Email: {$this->email}",
-				'Content-Type: application/json'
-			)
-		);
-
-		$http_result = curl_exec($ch);
-
-		$error = curl_error($ch);
-
-		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-		curl_close($ch);
-
-		return json_decode($http_result);
-		if($http_code != 200)
-		{
-			//die("Error: $error\n");
-		}
-		else
-		{
-			$json = json_decode($http_result);
-   		}
-	}
-
-	public function whitelist($ip)
-	{
-		$data = array(
-   			"a" => "wl",
-        			"key" => $ip,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(WhiteList)');
-
-		return $response->result;
-	}
-
-	public function blacklist($ip)
-	{
-		$data = array(
-   			"a" => "ban",
-        			"key" => $ip,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(BlackList)');
-
-		return $response->result;
-	}
-
-	public function fetch_recent_visitors($type, $time)
-	{
-		$data = array(
-   			"a" => "zone_ips",
-        			"zid" => $this->fetch_zid(),
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-        			"hours" => $time,
-        			"class" => $type,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(RecentVisitors)');
-
-		return $response;
-	}
-
-	public function challenge($ip)
-	{
-		$data = array(
-   			"a" => "zone_ips",
-        			"zid" => $this->zone,
-        			"key" => $ip,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(Challenge)');
-
-		return $response->result;
-	}
-
-	public function remove_challenge($ip)
-	{
-		$data = array(
-   			"a" => "nul",
-        			"zid" => $this->zone,
-        			"key" => $ip,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(RemoveChallenge)');
-
-		return $response->result;
-	}
-
-	public function cache_level($level)
-	{
-		$data = array(
-   			"a" => "cache_lvl",
-        			"z" => $this->zone,
-        			"v" => $level,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(CacheLevel)');
-
-		return $response->result;
-	}
-
-	public function update_calls(datacache $cache)
-	{
-		$data = array(
-   			"a" => "stats",
-        			"z" => $this->zone,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-        			"calls_left" => "1200"
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(CallsLeftCheck)');
-
-		$cache->update("cloudflare_calls",  $response->response->calls_left);
-	}
-
-	public function dev_mode($mode)
-	{
-		$data = array(
-   			"a" => "devmode",
-        			"z" => $this->zone,
-        			"v" => $mode,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(DevMode)');
-
-		return $response->result;
-	}
-
-	public function fetch_calls(datacache $cache)
-	{
-		return $cache->read("cloudflare_calls");
-	}
-
-	public function fetch_zid()
-	{
-		$data = array(
-   			"a" => "zone_check",
-        			"zones" => $this->zone,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(ZoneCheck)');
-
-		$data = $response->response;
-		$zones = $data->zones;
-		$zone = $this->zone;
-
-		return objectToArray($zones->$zone);
-	}
-
-	public function update_snapshot()
-	{
-		$data = array(
-   			"a" => "zone_grab",
-        			"zid" => $this->fetch_zid(),
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(UpdateSnapshot)');
-
-		return $response->result;
-	}
-
-	public function purge_cache($mode)
-	{
-		$data = array(
-   			"a" => "fpurge_ts",
-        			"z" => $this->zone,
-        			"v" => $mode,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(PurgeCache)');
-
-		return $response->result;
-	}
-
-	public function purge_preloader_cache($mode)
-	{
-		$data = array(
-   			"a" => "pre_purge",
-        			"z" => $this->zone,
-        			"v" => $mode,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(PurgePreloadercache)');
-
-		return $response->result;
-	}
-
-	public function security_level($level)
-	{
-		$data = array(
-   			"a" => "sec_lvl",
-        			"z" => $this->zone,
-        			"v" => $level,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(SecurityLevel)');
-
-		print_r($response);
-
-		return $response->result;
-	}
-
-	public function switch_ipv6($status)
-	{
-		$data = array(
-   			"a" => "ipv46",
-        			"zid" => $this->fetch_zid(),
-        			"u" => $this->email,
-        			"tkn" => $this->api_key,
-			"z" => $this->zone,
-			"v" => $status,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(IPv46)');
-
-		return $response->result;
-	}
-}
-
-$cloudflare = new cloudflare($mybb);
-
-function get_cloudflare_zone_id()
-{
-	global $mybb, $cloudflare;
-
-	$data = $cloudflare->request(
-		array(
-			'endpoint' => 'zones',
-			'url_parameters' => array (
-				'name' => $mybb->settings['cloudflare_domain']
-			)
-		)
-	);
-
-	return (isset($data->result[0]->id) ? array("zone_id" => $data->result[0]->id) : array("error" => $data->errors[0]->message));
-}
-
-function cloudflare_statistics($zoneid, $interval) // see https://api.cloudflare.com/#zone-analytics-dashboard
-{
-	global $cloudflare;
-
-	$data = $cloudflare->request(
-		array (
-			'endpoint' => "zones/{$zoneid}/analytics/dashboard",
-			'url_parameters' => array (
-				'since' => $interval,
-			)
-		)
-	);
-	return $data;
 }
 
 function cloudflare_threat_score($ip)
@@ -800,23 +435,6 @@ function local_whois_available()
 {
 	$disabled = explode(', ', ini_get('disable_functions'));
 	return !in_array('shell_exec', $disabled);
-}
-
-function objectToArray($d)
-{
-	if(is_object($d))
-	{
-		$d = get_object_vars($d);
-	}
-
-	if(is_array($d))
-	{
-		return array_map(__FUNCTION__, $d);
-	}
-	else
-	{
-		return $d;
-	}
 }
 
 ?>

@@ -18,7 +18,7 @@ if(!$mybb->input['action'])
 
 	if (!$cache->read('cloudflare_zone_id'))
 	{
-		$zone_id = get_cloudflare_zone_id();
+		$zone_id = $cloudflare->get_cloudflare_zone_id();
 		if (isset($zone_id['error']))
 		{
 			flash_message("Could not get zone ID: {$zone_id['error']}", "error");
@@ -43,21 +43,17 @@ if(!$mybb->input['action'])
 
 	$page->output_nav_tabs($sub_tabs, 'overview');
 
-	if(dns_status($mybb->settings['cloudflare_domain']) == true)
+	if($cloudflare->dns_status())
 	{
 		$dns_status = "<a href=\"index.php?module=cloudflare-dns_active\"><span style=\"color:green;font-weight:bold;\">Active</span></a>";
 	}
 	else
 	{
 		$dns_status = "<a href=\"index.php?module=cloudflare-dns_not_active\"><span style=\"color:red;font-weight:bold;\">Not Active</span></a>";
-	}
-
-	if($dns_status == "<a href=\"index.php?module=cloudflare-dns_not_active\"><span style=\"color:red;font-weight:bold;\">Not Active</span></a>")
-	{
 		flash_message("Your nameservers are not set correctly. Please change them to match the ones provided to you by CloudFlare.", "error");
 	}
 
-	$today_request = cloudflare_statistics($cache->read('cloudflare_zone_id'), -1440); // see https://api.cloudflare.com/#zone-analytics-dashboard
+	$today_request = $cloudflare->get_statistics(-1440); // see https://api.cloudflare.com/#zone-analytics-dashboard
 	$today_results = array(
 		'pageviews' => $today_request->result->totals->pageviews->all,
 		'uniques' => $today_request->result->totals->uniques->all,
@@ -66,7 +62,7 @@ if(!$mybb->input['action'])
 		'bandwidth_cached' => $today_request->result->totals->bandwidth->cached
 	);
 
-	$week_request = cloudflare_statistics($cache->read('cloudflare_zone_id'), -10080);
+	$week_request = $cloudflare->get_statistics(-10080);
 	$week_results = array (
 		'pageviews' => $week_request->result->totals->pageviews->all,
 		'uniques' => $week_request->result->totals->uniques->all,
@@ -82,7 +78,7 @@ if(!$mybb->input['action'])
 	$table->construct_cell("<strong>API URL</strong>", array('width' => '25%'));
 	$table->construct_cell("https://api.cloudflare.com/client/v4/", array('width' => '25%'));
 	$table->construct_cell("<strong>Plugin Version</strong>", array('width' => '200'));
-	$table->construct_cell(get_version(), array('width' => '200'));
+	$table->construct_cell("1", array('width' => '200')); // temp
 	$table->construct_row();
 
 	$table->construct_cell("<strong>Domain</strong>", array('width' => '25%'));
@@ -142,19 +138,5 @@ if(!$mybb->input['action'])
 
 	$page->output_footer();
 }
-
-	function dns_status($domain)
-	{
-		$dns = dns_get_record($domain, DNS_NS);
-
-		foreach($dns as $ns)
-		{
-			if(strpos($ns['target'], ".ns.cloudflare.com") == true)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
 
 ?>
