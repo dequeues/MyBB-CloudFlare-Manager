@@ -105,9 +105,21 @@ class cloudflare {
 		return false;
 	}
 
+	public function objectToArray($d) {
+		if(is_object($d)) {
+			$d = get_object_vars($d);
+		}
+		
+		if(is_array($d)) {
+			return array_map(array($this, 'objectToArray'), $d); // recursive
+		} else {
+			return $d;
+		}
+	}
+
 	public function get_statistics($interval) // see https://api.cloudflare.com/#zone-analytics-dashboard
 	{
-		$data = $this->request(
+		$data = $this->request (
 			array (
 				'endpoint' => "zones/{$this->zone_id}/analytics/dashboard",
 				'url_parameters' => array (
@@ -118,18 +130,36 @@ class cloudflare {
 		return $data;
 	}
 
-	public function whitelist($ip)
+	public function whitelist_ip($ip, $notes = '')
 	{
-		$data = array(
-   			"a" => "wl",
-        			"key" => $ip,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
+		$data = $this->request (
+			array (
+				'endpoint' => "zones/{$this->zone_id}/firewall/access_rules/rules",
+				'method' => 'POST',
+				'post_data' => array (
+					'mode' => 'whitelist',
+					'configuration' => array (
+						'target' => 'ip',
+						'value' => $ip,
+					),
+					'notes' => $notes
+				)
+			)
 		);
 
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(WhiteList)');
-
-		return $response->result;
+		if (!$data->success)
+		{
+			$errors = array();
+			foreach ($data->errors as $error)
+			{
+				$errors['errors'] = $error->message;
+			}
+			return $errors;
+		}
+		else
+		{
+			return array("success" => true);
+		}
 	}
 
 	public function blacklist($ip)

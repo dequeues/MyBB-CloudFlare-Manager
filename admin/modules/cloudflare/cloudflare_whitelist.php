@@ -9,32 +9,25 @@ if(!defined("IN_MYBB"))
 
 $page->add_breadcrumb_item("CloudFlare Manager", "index.php?module=cloudflare");
 $page->add_breadcrumb_item("White List", "index.php?module=cloudflare-whitelist");
+$page->output_header("CloudFlare Manager - White List");
+
+function main_page()
+{
+	require_once(MYBB_ROOT . "admin/inc/class_form.php");
+
+	$form = new Form("index.php?module=cloudflare-whitelist&amp;action=run", "post");
+	$form_container = new FormContainer("Whitelist an IP");
+	$form_container->output_row("IP Address", "The IP address you would like to whitelist", $form->generate_text_box('ip_address'));
+	$form_container->output_row("Notes", "Any notes you would like to add", $form->generate_text_box('notes'));
+	$form_container->end();
+	$buttons[] = $form->generate_submit_button("Submit");
+	$form->output_submit_wrapper($buttons);
+	$form->end();
+}
 
 if(!$mybb->input['action'])
 {
-	$page->output_header("CloudFlare Manager - White List");
-
-	$table = new Table;
-
-	$table->construct_cell('
-	<strong>White list an ip address.</strong><br /><br />
-	<form action="index.php?module=cloudflare-whitelist&amp;action=run" method="post">
-	<input type="hidden" value="'. $mybb->post_code .'" name="my_post_key">
-	Address: <input class="text_input" type="text" name="address"><br /><br />
-White Listing an IP address means that the computer won\'t be denied access by CloudFlare if it has been falsely blocked by the network.<br /><br />
-
-<span style="color:red;font-weight:bold;">Currently you can only white list a single ip address from this module. You cannot white list an ip range or country. To do that please visit your CloudFlare dashboard.</span>
-<br /><br />
-	<input class="submit_button" type="submit" name="submit" value="White List">
-	</form>
-
-	');
-
-	$table->construct_row();
-
-	$table->output("White List");
-
-	$page->output_footer();
+	main_page();
 }
 elseif($mybb->input['action'] == "run")
 {
@@ -44,40 +37,19 @@ elseif($mybb->input['action'] == "run")
 		admin_redirect("index.php?module=cloudflare-whitelist");
 	}
 
-	$page->output_header("CloudFlare Manager - White List");
 
-	$request = $cloudflare->whitelist($mybb->input['address']);
+	$request = $cloudflare->whitelist_ip($mybb->input['ip_address'], $mybb->input['notes']);
 
-	if($request == "success")
+	if(isset($request['success']))
 	{
-		$page->output_success("<p><em>CloudFlare has successfully whitelisted {$mybb->input['address']} on {$mybb->settings['cloudflare_domain']}".".</em></p>");
+		$page->output_success("<p><em>CloudFlare has successfully whitelisted {$mybb->input['ip_address']} on {$mybb->settings['cloudflare_domain']}".".</em></p>");
 	}
-	elseif($request == "error")
+	else
 	{
-		flash_message("CloudFlare could not successfully whitelist {$mybb->input['address']} on {$mybb->settings['cloudflare_domain']}".".", "error");
+		$page->output_inline_error($request['errors']);
 	}
-
-	$table = new Table;
-
-	$table->construct_cell('
-	<strong>White list an ip address.</strong><br /><br />
-	<form action="index.php?module=cloudflare-whitelist&amp;action=run" method="post">
-	<input type="hidden" value="'. $mybb->post_code .'" name="my_post_key">
-	Address: <input class="text_input" type="text" name="address"><br /><br />
-White Listing an IP address means that the computer won\'t be denied access by CloudFlare if it has been falsely blocked by the network.<br /><br />
-
-<span style="color:red;font-weight:bold;">Currently you can only white list a single ip address from this module. You cannot white list an ip range or country. To do that please visit your CloudFlare dashboard.</span>
-<br /><br />
-	<input class="submit_button" type="submit" name="submit" value="White List">
-	</form>
-
-	');
-
-	$table->construct_row();
-
-	$table->output("White List");
-
-	$page->output_footer();
+	main_page();
 }
 
+$page->output_footer();
 ?>
