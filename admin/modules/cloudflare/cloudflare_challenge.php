@@ -9,106 +9,38 @@ if(!defined("IN_MYBB"))
 $page->add_breadcrumb_item("CloudFlare Manager", "index.php?module=cloudflare");
 $page->add_breadcrumb_item("Challenge", "index.php?module=cloudflare-challenge");
 
-if(!$mybb->input['action'])
+$page->output_header("CloudFlare Manager - Challenge");
+
+function main_page()
 {
-	$page->output_header("CloudFlare Manager - Challenge");
+	require_once(MYBB_ROOT . "admin/inc/class_form.php");
 
-	$table = new Table;
-
-	$table->construct_cell('
-	<strong>Forces the person to fill out a captcha to confirm they are human.</strong><br /><br />
-	<form action="index.php?module=cloudflare-challenge&amp;action=challenge" method="post">
-	<input type="hidden" value="'. $mybb->post_code .'" name="my_post_key">
-	Address: <input class="text_input" type="text" name="address"><br /><br />
-The IP address won\'t be able to access your site until they have completed the captcha successfully or you have removed them from the challenge list.<br /><br />
-
-	<input  class="submit_button" type="submit" name="submit" value="Challenge">
-	</form>
-	');
-
-	$table->construct_row();
-
-	$table->output("Challenge IP Address");
-
-	$page->output_footer();
+	$form = new Form("index.php?module=cloudflare-challenge&amp;action=add_ip", "post");
+	$form_container = new FormContainer("Challenge an IP");
+	$form_container->output_row("IP Address", "The IP address won't be able to access your site until they have completed the captcha successfully or you have removed them from the challenge list.", $form->generate_text_box('ip_address'));
+	$form_container->output_row("Notes", "Any notes you would like to add", $form->generate_text_box('notes'));
+	$form_container->end();
+	$buttons[] = $form->generate_submit_button("Submit");
+	$form->output_submit_wrapper($buttons);
+	$form->end();
 }
-elseif($mybb->input['action'] == "challenge")
+
+if ($mybb->input['action'] == "add_ip")
 {
-	$page->output_header("CloudFlare Manager - Challenge");
+	$request = $cloudflare->challenge_ip($mybb->input['ip_address']);
 
-	$request = $cloudflare->challenge($mybb->input['address']);
-
-	if($request == "success")
+	if (isset($request['success']))
 	{
-		$page->output_success("<p><em>CloudFlare has successfully challenged " . htmlspecialchars_uni($mybb->input['address']) . " on " . $mybb->settings['cloudflare_domain'] . ".</em></p>");
-		log_admin_action('Challenged ' . htmlspecialchars_uni($mybb->input['address']) . ' on ' . $mybb->settings['cloudflare_domain']);
+		$page->output_success("<p><em>CloudFlare has successfully challenged {$mybb->input['ip_address']} on {$mybb->settings['cloudflare_domain']}.</em></p>");
 	}
-	elseif($request == "error")
+	else
 	{
-		flash_message("CloudFlare did not successfully challenge " . htmlspecialchars_uni($mybb->input['address']) . " on " . $mybb->settings['cloudflare_domain'] . ".", "error");
-		log_admin_action('Failed to challenge ' . htmlspecialchars_uni($mybb->input['address']) . ' on ' . $mybb->settings['cloudflare_domain']);
+		$page->output_inline_error($request['errors']);
 	}
-
-	$table = new Table;
-
-	$table->construct_cell('
-	<strong>Forces the person to fill out a captcha to confirm they are human.</strong><br /><br />
-	<form action="index.php?module=cloudflare-challenge&amp;action=challenge" method="post">
-	<input type="hidden" value="'. $mybb->post_code .'" name="my_post_key">
-	Address: <input class="text_input" type="text" name="address"><br /><br />
-The IP address won\'t be able to access your site until they have completed the captcha successfully or you have removed them from the challenge list.<br /><br />
-
-	<input  class="submit_button" type="submit" name="submit" value="Challenge">
-	</form>
-	');
-
-	$table->construct_row();
-
-	$table->output("Challenge IP Address");
-
-	$page->output_footer();
 }
-elseif($mybb->input['action'] == "remove_challenge")
-{
-	if(!verify_post_check($mybb->input['my_post_key']))
-	{
-		flash_message($lang->invalid_post_verify_key2, 'error');
-		admin_redirect("index.php?module=cloudflare-challenge");
-	}
 
-	$page->output_header("Challenge");
+main_page();
 
-	$request = $cloudflare->remove_challenge($mybb->input['address']);
-
-	if($request == "success")
-	{
-		$page->output_success("<p><em>CloudFlare has successfully removed challenge for " . htmlspecialchars_uni($mybb->input['address']) . " on " . $mybb->settings['cloudflare_domain'] . ".</em></p>");
-		log_admin_action('Removed challenge for ' . htmlspecialchars_uni($mybb->input['address']) . ' on ' . $mybb->settings['cloudflare_domain']);
-	}
-	elseif($request == "error")
-	{
-		flash_message("CloudFlare did not successfully remove challenge for " . htmlspecialchars_uni($mybb->input['address']) . " on " . $mybb->settings['cloudflare_domain'] . ".", "error");
-		log_admin_action('Failed to remove challenge for ' . htmlspecialchars_uni($mybb->input['address']) . ' on ' . $mybb->settings['cloudflare_domain']);
-	}
-
-	$table = new Table;
-
-	$table->construct_cell('
-	<strong>Forces the person to fill out a captcha to confirm they are human.</strong><br /><br />
-	<form action="index.php?module=cloudflare-challenge&amp;action=challenge" method="post">
-	<input type="hidden" value="'. $mybb->post_code .'" name="my_post_key">
-	Address: <input class="text_input" type="text" name="address"><br /><br />
-The IP address won\'t be able to access your site until they have completed the captcha successfully or you have removed them from the challenge list.<br /><br />
-
-	<input class="submit_button" type="submit" name="submit" value="Challenge">
-	</form>
-	');
-
-	$table->construct_row();
-
-	$table->output("Challenge IP Address");
-
-	$page->output_footer();
-}
+$page->output_footer();
 
 ?>

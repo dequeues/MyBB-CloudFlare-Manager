@@ -132,15 +132,20 @@ class cloudflare {
 
 	public function whitelist_ip($ip, $notes = '')
 	{
-		return $this->update_access_rules("whitelist", $ip, $notes);
+		return $this->update_access_rule("whitelist", $ip, $notes);
 	}
 
 	public function blacklist_ip($ip, $notes = '')
 	{
-		return $this->update_access_rules("block", $ip, $notes);
+		return $this->update_access_rule("block", $ip, $notes);
 	}
 
-	private function update_access_rules($mode, $ip, $notes = '')
+	public function challenge_ip($ip, $notes = '')
+	{
+		return $this->update_access_rule("challenge", $ip, $notes);
+	}
+
+	private function update_access_rule($mode, $ip, $notes = '')
 	{
 		$data = $this->request (
 			array (
@@ -186,36 +191,6 @@ class cloudflare {
 		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(RecentVisitors)');
 
 		return $response;
-	}
-
-	public function challenge($ip)
-	{
-		$data = array(
-   			"a" => "zone_ips",
-        			"zid" => $this->zone,
-        			"key" => $ip,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(Challenge)');
-
-		return $response->result;
-	}
-
-	public function remove_challenge($ip)
-	{
-		$data = array(
-   			"a" => "nul",
-        			"zid" => $this->zone,
-        			"key" => $ip,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(RemoveChallenge)');
-
-		return $response->result;
 	}
 
 	public function cache_level($level)
