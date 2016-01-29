@@ -8,33 +8,23 @@ if(!defined("IN_MYBB"))
 
 $page->add_breadcrumb_item("CloudFlare Manager", "index.php?module=cloudflare");
 $page->add_breadcrumb_item("Black List", "index.php?module=cloudflare-blacklist");
+$page->output_header("CloudFlare Manager - Blacklist");
 
-if(!$mybb->input['action'])
+function main_page()
 {
-	$page->output_header("CloudFlare Manager - Black List");
+	require_once(MYBB_ROOT . "admin/inc/class_form.php");
 
-	$table = new Table;
-
-	$table->construct_cell('
-	<strong>Black list an ip address.</strong><br /><br />
-	<form action="index.php?module=cloudflare-blacklist&amp;action=run" method="post">
-	<input type="hidden" value="'. $mybb->post_code .'" name="my_post_key">
-	Address: <input class="text_input" type="text" name="address"><br /><br />
-Black listing an IP address means that the computer will not be able to access your site unless you remove them from the list.<br /><br />
-
-<span style="color:red;font-weight:bold;">Currently you can only black list a single ip address from this module. You cannot black list an ip range or country. To do that please visit your CloudFlare dashboard.</span>
-<br /><br />
-	<input class="submit_button" type="submit" name="submit" value="Black List">
-	</form>
-	');
-
-	$table->construct_row();
-
-	$table->output("Black List");
-
-	$page->output_footer();
+	$form = new Form("index.php?module=cloudflare-blacklist&amp;action=run", "post");
+	$form_container = new FormContainer("Blacklist an IP");
+	$form_container->output_row("IP Address", "The IP address you would like to blacklist<br /><b>Only a single IP is currently supported!</b>", $form->generate_text_box('ip_address'));
+	$form_container->output_row("Notes", "Any notes you would like to add", $form->generate_text_box('notes'));
+	$form_container->end();
+	$buttons[] = $form->generate_submit_button("Submit");
+	$form->output_submit_wrapper($buttons);
+	$form->end();
 }
-elseif($mybb->input['action'] == "run")
+
+if($mybb->input['action'] == "run")
 {
 	if(!verify_post_check($mybb->input['my_post_key']))
 	{
@@ -42,41 +32,20 @@ elseif($mybb->input['action'] == "run")
 		admin_redirect("index.php?module=cloudflare-blacklist");
 	}
 
-	$page->output_header("Black List");
+	$request = $cloudflare->blacklist_ip($mybb->input['ip_address'], $mybb->input['notes']);
 
-	$request = $cloudflare->blacklist($mybb->input['address']);
-
-	if($request == "success")
+	if(isset($request['success']))
 	{
-		$page->output_success("<p><em>CloudFlare has successfully blacklisted " . htmlspecialchars_uni($mybb->input['address']) . " on " . $mybb->settings['cloudflare_domain'] . ".</em></p>");
-		log_admin_action('Black listed '.htmlspecialchars_uni($mybb->input['address']).' on '.$mybb->settings['cloudflare_domain']);
+		$page->output_success("<p><em>CloudFlare has successfully blacklisted {$mybb->input['ip_address']} on {$mybb->settings['cloudflare_domain']}.</em></p>");
 	}
-	elseif($request == "error")
+	else
 	{
-		flash_message("CloudFlare could not successfully blacklist " . htmlspecialchars_uni($mybb->input['address']) ." on " . $mybb->settings['cloudflare_domain'] . ".", "error");
-		log_admin_action('Failed to black list '.htmlspecialchars_uni($mybb->input['address']).' on '.$mybb->settings['cloudflare_domain']);
+		$page->output_inline_error($request['errors']);
 	}
-
-	$table = new Table;
-
-	$table->construct_cell('
-	<strong>Black list an ip address.</strong><br /><br />
-	<form action="index.php?module=cloudflare-blacklist&amp;action=run" method="post">
-	<input class="text_input" type="hidden" value="'. $mybb->post_code .'" name="my_post_key">
-	Address: <input type="text" name="address"><br /><br />
-Black listing an IP address means that the computer will not be able to access your site unless you remove them from the list.<br /><br />
-
-<span style="color:red;font-weight:bold;">Currently you can only black list a single ip address from this module. You cannot black list an ip range or country. To do that please visit your CloudFlare dashboard.</span>
-<br /><br />
-	<input class="submit_button" type="submit" name="submit" value="Black List">
-	</form>
-	');
-
-	$table->construct_row();
-
-	$table->output("Black List");
-
-	$page->output_footer();
 }
+
+main_page();
+
+$page->output_footer();
 
 ?>

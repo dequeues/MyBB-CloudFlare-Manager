@@ -132,12 +132,22 @@ class cloudflare {
 
 	public function whitelist_ip($ip, $notes = '')
 	{
+		return $this->update_access_rules("whitelist", $ip, $notes);
+	}
+
+	public function blacklist_ip($ip, $notes = '')
+	{
+		return $this->update_access_rules("block", $ip, $notes);
+	}
+
+	private function update_access_rules($mode, $ip, $notes = '')
+	{
 		$data = $this->request (
 			array (
 				'endpoint' => "zones/{$this->zone_id}/firewall/access_rules/rules",
 				'method' => 'POST',
 				'post_data' => array (
-					'mode' => 'whitelist',
+					'mode' => $mode,
 					'configuration' => array (
 						'target' => 'ip',
 						'value' => $ip,
@@ -160,20 +170,6 @@ class cloudflare {
 		{
 			return array("success" => true);
 		}
-	}
-
-	public function blacklist($ip)
-	{
-		$data = array(
-   			"a" => "ban",
-        			"key" => $ip,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(BlackList)');
-
-		return $response->result;
 	}
 
 	public function fetch_recent_visitors($type, $time)
