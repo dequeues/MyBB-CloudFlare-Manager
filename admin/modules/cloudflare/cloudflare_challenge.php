@@ -27,7 +27,7 @@ function main_page()
 
 if ($mybb->input['action'] == "add_ip")
 {
-	$request = $cloudflare->challenge_ip($mybb->input['ip_address']);
+	$request = $cloudflare->challenge_ip($mybb->input['ip_address'], $mybb->input['notes']);
 
 	if (isset($request['success']))
 	{
