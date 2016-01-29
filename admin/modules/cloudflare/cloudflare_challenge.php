@@ -30,23 +30,6 @@ The IP address won\'t be able to access your site until they have completed the 
 
 	$table->output("Challenge IP Address");
 
-	$table = new Table;
-
-	$table->construct_cell('
-	<strong>Removes the need for a person to fill out a captcha.</strong><br /><br />
-	<form action="index.php?module=cloudflare-challenge&action=remove_challenge" method="post">
-	<input type="hidden" value="'. $mybb->post_code .'" name="my_post_key">
-	Address: <input class="text_input" type="text" name="address"><br /><br />
-The IP address will be able to access your site after you have submitted this form.<br /><br />
-
-	<input class="submit_button" type="submit" name="submit" value="Remove Challenge">
-	</form>
-	');
-
-	$table->construct_row();
-
-	$table->output("Remove Challenge");
-
 	$page->output_footer();
 }
 elseif($mybb->input['action'] == "challenge")
@@ -82,23 +65,6 @@ The IP address won\'t be able to access your site until they have completed the 
 	$table->construct_row();
 
 	$table->output("Challenge IP Address");
-
-	$table = new Table;
-
-	$table->construct_cell('
-	<strong>Removes the need for a person to fill out a captcha.</strong><br /><br />
-	<form action="index.php?module=cloudflare-challenge&amp;action=remove_challenge" method="post">
-	<input type="hidden" value="'. $mybb->post_code .'" name="my_post_key">
-	Address: <input class="text_input" type="text" name="address"><br /><br />
-The IP address will be able to access your site after you have submitted this form.<br /><br />
-
-	<input class="submit_button" type="submit" name="submit" value="Remove Challenge">
-	</form>
-	');
-
-	$table->construct_row();
-
-	$table->output("Remove Challenge");
 
 	$page->output_footer();
 }
@@ -141,23 +107,6 @@ The IP address won\'t be able to access your site until they have completed the 
 	$table->construct_row();
 
 	$table->output("Challenge IP Address");
-
-	$table = new Table;
-
-	$table->construct_cell('
-	<strong>Removes the need for a person to fill out a captcha.</strong><br /><br />
-	<form action="index.php?module=cloudflare-challenge&amp;action=remove_challenge" method="post">
-	<input type="hidden" value="'. $mybb->post_code .'" name="my_post_key">
-	Address: <input class="text_input" type="text" name="address"><br /><br />
-The IP address will be able to access your site after you have submitted this form.<br /><br />
-
-	<input class="submit_button" type="submit" name="submit" value="Remove Challenge">
-	</form>
-	');
-
-	$table->construct_row();
-
-	$table->output("Remove Challenge");
 
 	$page->output_footer();
 }
