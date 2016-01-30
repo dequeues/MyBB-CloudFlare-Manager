@@ -31,7 +31,11 @@ class cloudflare {
 			}
 
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request_data['method']);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['post_fields']));
+
+			if (isset($request_data['post_fields']))
+			{
+				curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['post_fields']));
+			}
 		}
 
 		$url = $this->api_url . $request_data['endpoint'];
@@ -40,6 +44,7 @@ class cloudflare {
 		{
 			$url = $url . "?". http_build_query($request_data['url_parameters']);
 		}
+
 		curl_setopt($ch, CURLOPT_VERBOSE, 1);
 		curl_setopt($ch, CURLOPT_USERAGENT, "MyBB CloudFlare Manager Plugin");
 		curl_setopt($ch, CURLOPT_URL, $url);
