@@ -83,12 +83,12 @@ function cloudflare_action_handler($action)
 		50 => array("id" => "ipv46", "title" => "IPv6 Support", "link" => "index.php?module=cloudflare-ipv46"),
 	);
 
-	$sub_menu['Security'] = array (
+	$sub_menu['Cache'] = array (
 		10 => array("id" => "cache_lvl", "title" => "Cache Level", "link" => "index.php?module=cloudflare-cache_lvl"),
 		20 => array("id" => "purge_cache", "title" => "Purge Cache", "link" => "index.php?module=cloudflare-purge_cache"),
 	);
 
-	$sub_menu['Cache'] = array (
+	$sub_menu['About Plugin'] = array (
 		10 => array("id" => "about_plugin", "title" => "About Plugin", "link" => "index.php?module=cloudflare-about_plugin"),
 		20 => array("id" => "check_for_updates", "title" => "Check for Updates", "link" => "index.php?module=cloudflare-check_for_updates"),
 		40 => array("id" => "report_bug", "title" => "Report Bug", "link" => "index.php?module=cloudflare-report_bug")
@@ -100,7 +100,7 @@ function cloudflare_action_handler($action)
 		30 => array("id" => "update_snapshot", "title" => "Update Snapshot", "link" => "index.php?module=cloudflare-update_snapshot")
 	);
 
-	$sub_menu['About Plugin'] = array (
+	$sub_menu['Security'] = array (
 		10 => array("id" => "security_lvl", "title" => "Security Level", "link" => "index.php?module=cloudflare-security_lvl"),
 		20 => array("id" => "topthreats", "title" => "Top Threats", "link" => "index.php?module=cloudflare-topthreats")
 	);
