@@ -133,6 +133,36 @@ class cloudflare {
 		return $data;
 	}
 
+	function dev_mode($setting = NULL)
+	{
+		$endpoint = "zones/{$this->zone_id}/settings/development_mode";
+		if (is_null($setting))
+		{
+			$data = $this->request(
+				array (
+					'endpoint' => $endpoint
+				)
+			);
+
+			return $data;
+		}
+		else
+		{
+			$data = $this->request(
+				array (
+					'endpoint' => $endpoint,
+					'method' => 'PATCH',
+					'post_fields' => array (
+						'value' => $setting
+					)
+				)
+			);
+
+			return $data;
+		}
+	}
+
+
 	public function whitelist_ip($ip, $notes = '')
 	{
 		return $this->update_access_rule("whitelist", $ip, $notes);
@@ -272,21 +302,6 @@ class cloudflare {
 		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(CallsLeftCheck)');
 
 		$cache->update("cloudflare_calls",  $response->response->calls_left);
-	}
-
-	public function dev_mode($mode)
-	{
-		$data = array(
-   			"a" => "devmode",
-        			"z" => $this->zone,
-        			"v" => $mode,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(DevMode)');
-
-		return $response->result;
 	}
 
 	public function fetch_calls(datacache $cache)

@@ -211,38 +211,6 @@ function cloudflare_threat_score($ip)
    }
 }
 
-function cloudflare_dev_mode($zoneid, $trigger = false)
-{
-	global $mybb, $cloudflare;
-
-	$endpoint = "zones/{$zoneid}/settings/development_mode";
-	if (!$trigger)
-	{
-		$data = $cloudflare->request(
-			array (
-				'endpoint' => $endpoint
-			)
-		);
-
-		return $data;
-	}
-
-	else
-	{
-		$data = $cloudflare->request(
-			array (
-				'endpoint' => $endpoint,
-				'method' => 'PATCH',
-				'patch_data' => array (
-					'value' => 'on'
-				)
-			)
-		);
-
-		return $data;
-	}
-}
-
 function cloudflare_security_level()
 {
 	global $mybb;
