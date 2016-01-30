@@ -304,52 +304,6 @@ function cloudflare_ipv46_setting()
    }
 }
 
-function cloudflare_cache_lvl_setting()
-{
-	global $mybb;
-
-	$url = "https://www.cloudflare.com/api_json.html";
-
-	$data = array(
-		"a" => "stats",
-		"email" => $mybb->settings['cloudflare_email'],
-		"z" => $mybb->settings['cloudflare_domain'],
-		"tkn" => $mybb->settings['cloudflare_api'],
-		"interval" => 10,
-	);
-
-	$ch = curl_init();
-
-	curl_setopt($ch, CURLOPT_VERBOSE, 1);
-	curl_setopt($ch, CURLOPT_USERAGENT, "MyBB/CloudFlare-Plugin(CacheLvlSetting)");
-	curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-	$http_result = curl_exec($ch);
-	$error = curl_error($ch);
-
-	$http_code = curl_getinfo($ch ,CURLINFO_HTTP_CODE);
-
-	curl_close($ch);
-
-	if($http_code != 200)
-	{
-		echo "Error: $error\n";
-	}
-	else
-	{
-		$json = json_decode($http_result);
-		//echo "<div id='debug'>" . print_r($json) . "</div>";
-
-		return objectToArray($json->response->result->objs[0]->cache_lvl);
-   }
-}
-
 function cloudflare_admin_permissions()
 {
 	global $plugins;

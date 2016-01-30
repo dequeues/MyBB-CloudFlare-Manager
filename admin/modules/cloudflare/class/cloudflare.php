@@ -136,6 +136,7 @@ class cloudflare {
 	function dev_mode($setting = NULL)
 	{
 		$endpoint = "zones/{$this->zone_id}/settings/development_mode";
+
 		if (is_null($setting))
 		{
 			$data = $this->request(
@@ -213,6 +214,7 @@ class cloudflare {
 	public function ipv46_setting($setting = NULL)
 	{
 		$endpoint = "/zones/{$this->zone_id}/settings/ipv6";
+
 		if (is_null($setting))
 		{
 			$data = $this->request(
@@ -258,6 +260,33 @@ class cloudflare {
 		return $data;
 	}
 
+	public function cache_level($setting = NULL)
+	{
+		$endpoint = "/zones/{$this->zone_id}/settings/cache_level";
+
+		if (is_null($setting))
+		{
+			$data = $this->request(
+				array (
+					'endpoint' => $endpoint
+				)
+			);
+			return $data;
+		}
+
+		$data = $this->request(
+			array (
+				'endpoint' => $endpoint,
+				'method' => 'PATCH',
+				'post_fields' => array (
+					'value' => $setting
+				)
+			)
+		);
+
+		return $data;
+	}
+
 	public function fetch_recent_visitors($type, $time)
 	{
 		$data = array(
@@ -272,21 +301,6 @@ class cloudflare {
 		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(RecentVisitors)');
 
 		return $response;
-	}
-
-	public function cache_level($level)
-	{
-		$data = array(
-   			"a" => "cache_lvl",
-        			"z" => $this->zone,
-        			"v" => $level,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(CacheLevel)');
-
-		return $response->result;
 	}
 
 	public function update_calls(datacache $cache)
