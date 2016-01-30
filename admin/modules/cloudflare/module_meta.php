@@ -389,12 +389,12 @@ function cloudflare_admin_permissions()
 	$admin_permissions = array(
 		"overview"		=> "Can manage CloudFlare overview?",
 		"dev_mode"		=> "Can manage CloudFlare development mode?",
+		"manage_firewall" => "Can manage the firewall?",
 		"security_lvl"	=> "Can manage CloudFlare security level?",
 		"blacklist"		=> "Can manage CloudFlare blacklist?",
 		"whitelist"		=> "Can manage CloudFlare whitelist?",
 		"challenge"		=> "Can manage CloudFlare challenge?",
 		"ipv46"			=> "Can manage CloudFlare IPv46?",
-		"whois"			=> "Can manage CloudFlare Whois lookup?",
 		"statistics"	=> "Can manage CloudFlare statistics?",
 		"recent_visitors"	=> "Can manage CloudFlare recent visitors?",
 		"statistics"	=> "Can manage CloudFlare statistics?",
