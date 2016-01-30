@@ -287,6 +287,21 @@ class cloudflare {
 		return $data;
 	}
 
+	public function purge_cache($purge_everything = false)
+	{
+		$data = $this->request(
+			array (
+				'endpoint' => "/zones/{$this->zone_id}/purge_cache",
+				'method' => 'DELETE',
+				'post_fields' => array (
+					'purge_everything' => $purge_everything
+				)
+			)
+		);
+
+		return $data;
+	}
+
 	public function fetch_recent_visitors($type, $time)
 	{
 		$data = array(
@@ -351,21 +366,6 @@ class cloudflare {
 		);
 
 		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(UpdateSnapshot)');
-
-		return $response->result;
-	}
-
-	public function purge_cache($mode)
-	{
-		$data = array(
-   			"a" => "fpurge_ts",
-        			"z" => $this->zone,
-        			"v" => $mode,
-        			"email" => $this->email,
-        			"tkn" => $this->api_key,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(PurgeCache)');
 
 		return $response->result;
 	}
