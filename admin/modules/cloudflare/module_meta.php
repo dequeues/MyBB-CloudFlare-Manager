@@ -53,8 +53,6 @@ function cloudflare_action_handler($action)
 		'dev_mode' => array('active' => 'dev_mode', 'file' => 'cloudflare_dev_mode.php'),
 		'cache_lvl' => array('active' => 'cache_lvl', 'file' => 'cloudflare_cache_lvl.php'),
 		'security_lvl' => array('active' => 'security_lvl', 'file' => 'cloudflare_security_lvl.php'),
-		'statistics' => array('active' => 'statistics', 'file' => 'cloudflare_statistics.php'),
-		'recent_visitors' => array('active' => 'recent_visitors', 'file' => 'cloudflare_recent_visitors.php'),
 		'blacklist' => array('active' => 'blacklist', 'file' => 'cloudflare_blacklist.php'),
 		'whitelist' => array('active' => 'whitelist', 'file' => 'cloudflare_whitelist.php'),
 		'about_plugin' => array('active' => 'about_plugin', 'file' => 'cloudflare_about_plugin.php'),
@@ -65,7 +63,6 @@ function cloudflare_action_handler($action)
 		'dns_active' => array('active' => 'dns_active', 'file' => 'cloudflare_dns_active.php'),
 		'dns_not_active' => array('active' => 'dns_not_active', 'file' => 'cloudflare_dns_not_active.php'),
 		'challenge' => array('active' => 'challenge', 'file' => 'cloudflare_challenge.php'),
-		'recent_visitors_48' => array('active' => 'recent_visitors_48', 'file' => 'cloudflare_recent_visitors_48.php'),
 		'ipv46' => array('active' => 'ipv46', 'file' => 'cloudflare_ipv46.php'),
 		'topthreats' => array('active' => 'topthreats', 'file' => 'cloudflare_topthreats.php'),
 		'manage_firewall' => array('active' => 'manage_firewall', 'file' => 'cloudflare_manage_firewall.php')
@@ -91,11 +88,6 @@ function cloudflare_action_handler($action)
 		10 => array("id" => "about_plugin", "title" => "About Plugin", "link" => "index.php?module=cloudflare-about_plugin"),
 		20 => array("id" => "check_for_updates", "title" => "Check for Updates", "link" => "index.php?module=cloudflare-check_for_updates"),
 		40 => array("id" => "report_bug", "title" => "Report Bug", "link" => "index.php?module=cloudflare-report_bug")
-	);
-
-	$sub_menu['Statistics'] = array (
-		10 => array("id" => "statistics", "title" => "Statistics", "link" => "index.php?module=cloudflare-statistics"),
-		20 => array("id" => "recent_visitors", "title" => "Recent Visitors", "link" => "index.php?module=cloudflare-recent_visitors"),
 	);
 
 	$sub_menu['Security'] = array (
@@ -302,9 +294,6 @@ function cloudflare_admin_permissions()
 		"whitelist"		=> "Can manage CloudFlare whitelist?",
 		"challenge"		=> "Can manage CloudFlare challenge?",
 		"ipv46"			=> "Can manage CloudFlare IPv46?",
-		"statistics"	=> "Can manage CloudFlare statistics?",
-		"recent_visitors"	=> "Can manage CloudFlare recent visitors?",
-		"statistics"	=> "Can manage CloudFlare statistics?",
 		"topthreats"	=> "Can manage CloudFlare top threats?",
 		"cache_lvl"	=> "Can manage CloudFlare cache level?",
 		"purge_cache"	=> "Can manage CloudFlare purge cache?",
