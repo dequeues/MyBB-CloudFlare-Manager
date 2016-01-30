@@ -287,19 +287,37 @@ class cloudflare {
 		return $data;
 	}
 
-	public function purge_cache($purge_everything = false)
+	public function purge_cache($urls = NULL)
 	{
-		$data = $this->request(
-			array (
-				'endpoint' => "/zones/{$this->zone_id}/purge_cache",
-				'method' => 'DELETE',
-				'post_fields' => array (
-					'purge_everything' => $purge_everything
-				)
-			)
-		);
+		$endpoint = "/zones/{$this->zone_id}/purge_cache";
 
-		return $data;
+		if (is_null($files))
+		{
+			$data = $this->request(
+				array (
+					'endpoint' => $endpoint,
+					'method' => 'DELETE',
+					'post_fields' => array (
+						'purge_everything' => true
+					)
+				)
+			);
+
+			return $data;
+		}
+
+		if (is_array($files))
+		{
+			$data = $this->request(
+				array (
+					'endpoint' => $endpoint,
+					'method' => 'DELETE',
+					'post_fields' => array (
+						'files' => 'urls'
+					)
+				)
+			);
+		}
 	}
 
 	public function fetch_recent_visitors($type, $time)
