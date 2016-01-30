@@ -11,6 +11,7 @@ $plugins->add_hook("postbit", "cloudflare_postbit");
 $plugins->add_hook("moderation_start", "cloudflare_moderation_start");
 $plugins->add_hook("get_ip", "cloudflare_fixip");
 
+define('CLOUDFLARE_MANAGER_VERSION', '2.0-beta');
 
 if(my_strpos($_SERVER['PHP_SELF'], 'showthread.php'))
 {
@@ -31,7 +32,7 @@ function cloudflare_info()
 		'author'		=> 'MyBB Security Group',
 		'authorsite'	=> 'http://www.mybbsecurity.net/',
 		'version'		=> '2.0-beta',
-		"compatibility" => "18*"
+		"compatibility" => CLOUDFLARE_MANAGER_VERSION
 	);
 }
 
