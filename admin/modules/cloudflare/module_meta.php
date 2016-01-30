@@ -66,7 +66,6 @@ function cloudflare_action_handler($action)
 		'dns_not_active' => array('active' => 'dns_not_active', 'file' => 'cloudflare_dns_not_active.php'),
 		'challenge' => array('active' => 'challenge', 'file' => 'cloudflare_challenge.php'),
 		'recent_visitors_48' => array('active' => 'recent_visitors_48', 'file' => 'cloudflare_recent_visitors_48.php'),
-		'update_snapshot' => array('active' => 'update_snapshot', 'file' => 'cloudflare_update_snapshot.php'),
 		'ipv46' => array('active' => 'ipv46', 'file' => 'cloudflare_ipv46.php'),
 		'topthreats' => array('active' => 'topthreats', 'file' => 'cloudflare_topthreats.php'),
 		'manage_firewall' => array('active' => 'manage_firewall', 'file' => 'cloudflare_manage_firewall.php')
@@ -94,10 +93,9 @@ function cloudflare_action_handler($action)
 		40 => array("id" => "report_bug", "title" => "Report Bug", "link" => "index.php?module=cloudflare-report_bug")
 	);
 
-	$sub_menu['CloudFlare Support'] = array (
+	$sub_menu['Statistics'] = array (
 		10 => array("id" => "statistics", "title" => "Statistics", "link" => "index.php?module=cloudflare-statistics"),
 		20 => array("id" => "recent_visitors", "title" => "Recent Visitors", "link" => "index.php?module=cloudflare-recent_visitors"),
-		30 => array("id" => "update_snapshot", "title" => "Update Snapshot", "link" => "index.php?module=cloudflare-update_snapshot")
 	);
 
 	$sub_menu['Security'] = array (
@@ -307,7 +305,6 @@ function cloudflare_admin_permissions()
 		"statistics"	=> "Can manage CloudFlare statistics?",
 		"recent_visitors"	=> "Can manage CloudFlare recent visitors?",
 		"statistics"	=> "Can manage CloudFlare statistics?",
-		"update_snapshot"	=> "Can manage CloudFlare update snapshot?",
 		"topthreats"	=> "Can manage CloudFlare top threats?",
 		"cache_lvl"	=> "Can manage CloudFlare cache level?",
 		"purge_cache"	=> "Can manage CloudFlare purge cache?",
