@@ -14,8 +14,6 @@ $ipv6_mode_enabled = ($cloudflare->ipv46_setting()->result->value == 'on' ? true
 
 function main_page($enabled)
 {
-	require_once(MYBB_ROOT . "admin/inc/class_form.php");
-
 	$form = new Form('index.php?module=cloudflare-ipv46&amp;action=change', 'post');
 	$form_container = new FormContainer("IPv6 Support");
 	$form_container->output_row('IPv6 Support', 'Enable IPv6 support and gateway', $form->generate_yes_no_radio('enable_ipv6', ($enabled ? "1" : "0")));

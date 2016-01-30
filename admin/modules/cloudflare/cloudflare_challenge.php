@@ -13,8 +13,6 @@ $page->output_header("CloudFlare Manager - Challenge");
 
 function main_page()
 {
-	require_once(MYBB_ROOT . "admin/inc/class_form.php");
-
 	$form = new Form("index.php?module=cloudflare-challenge&amp;action=add_ip", "post");
 	$form_container = new FormContainer("Challenge an IP");
 	$form_container->output_row("IP Address", "The IP address won't be able to access your site until they have completed the captcha successfully or you have removed them from the challenge list.", $form->generate_text_box('ip_address'));

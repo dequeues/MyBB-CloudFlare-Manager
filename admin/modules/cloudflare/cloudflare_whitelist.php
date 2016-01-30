@@ -13,8 +13,6 @@ $page->output_header("CloudFlare Manager - White List");
 
 function main_page()
 {
-	require_once(MYBB_ROOT . "admin/inc/class_form.php");
-
 	$form = new Form("index.php?module=cloudflare-whitelist&amp;action=run", "post");
 	$form_container = new FormContainer("Whitelist an IP");
 	$form_container->output_row("IP Address", "The IP address you would like to whitelist", $form->generate_text_box('ip_address'));

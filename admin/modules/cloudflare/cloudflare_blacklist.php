@@ -12,8 +12,6 @@ $page->output_header("CloudFlare Manager - Blacklist");
 
 function main_page()
 {
-	require_once(MYBB_ROOT . "admin/inc/class_form.php");
-
 	$form = new Form("index.php?module=cloudflare-blacklist&amp;action=run", "post");
 	$form_container = new FormContainer("Blacklist an IP");
 	$form_container->output_row("IP Address", "The IP address you would like to blacklist<br /><b>Only a single IP is currently supported!</b>", $form->generate_text_box('ip_address'));
