@@ -1,5 +1,11 @@
 <?php
 
+// Disallow direct access to this file for security reasons
+if(!defined("IN_MYBB"))
+{
+	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
+}
+
 class cloudflare {
 
 	public $zone = '';
@@ -19,7 +25,7 @@ class cloudflare {
 		}
 	}
 
-	public function request($request_data)
+	public function request($request_data, $custom_url = false)
 	{
 		$ch = curl_init();
 
@@ -38,11 +44,18 @@ class cloudflare {
 			}
 		}
 
-		$url = $this->api_url . $request_data['endpoint'];
-
-		if (isset($request_data['url_parameters']))
+		if (!$custom_url)
 		{
-			$url = $url . "?". http_build_query($request_data['url_parameters']);
+			$url = $this->api_url . $request_data['endpoint'];
+
+			if (isset($request_data['url_parameters']))
+			{
+				$url = $url . "?". http_build_query($request_data['url_parameters']);
+			}
+		}
+		else
+		{
+			$url = $custom_url;
 		}
 
 		curl_setopt($ch, CURLOPT_VERBOSE, 1);
@@ -51,13 +64,17 @@ class cloudflare {
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_HTTPHEADER,
-			array(
-				"X-Auth-Key: {$this->api_key}",
-				"X-Auth-Email: {$this->email}",
-				'Content-Type: application/json'
-			)
-		);
+
+		if (!$custom_url)
+		{
+			curl_setopt($ch, CURLOPT_HTTPHEADER,
+				array(
+					"X-Auth-Key: {$this->api_key}",
+					"X-Auth-Email: {$this->email}",
+					'Content-Type: application/json'
+				)
+			);
+		}
 
 		$http_result = curl_exec($ch);
 
@@ -67,15 +84,12 @@ class cloudflare {
 
 		curl_close($ch);
 
-		return json_decode($http_result);
-		if($http_code != 200)
+		if ($custom_url)
 		{
-			//die("Error: $error\n");
+			return htmlspecialchars($http_result);
 		}
-		else
-		{
-			$json = json_decode($http_result);
-   		}
+
+		return json_decode($http_result);
 	}
 
 	public function get_cloudflare_zone_id()
@@ -318,6 +332,13 @@ class cloudflare {
 				)
 			);
 		}
+	}
+
+	public function get_latest_version()
+	{
+		$data = $this->request("", 'https://raw.githubusercontent.com/dequeues/MyBB-CloudFlare-Manager/master/inc/plugins/cloudflare.php');
+		preg_match('/define\(\'CLOUDFLARE_MANAGER_VERSION\', \'(.*?)\'\);/', $data, $matches);
+		return $matches[1];
 	}
 
 	public function fetch_recent_visitors($type, $time)
