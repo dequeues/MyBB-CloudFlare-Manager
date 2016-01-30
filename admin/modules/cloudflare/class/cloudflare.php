@@ -177,6 +177,32 @@ class cloudflare {
 		}
 	}
 
+	public function ipv46_setting($setting = NULL)
+	{
+		$endpoint = "/zones/{$this->zone_id}/settings/ipv6";
+		if (is_null($setting))
+		{
+			$data = $this->request(
+				array (
+					'endpoint' => $endpoint
+				)
+			);
+			return $data;
+		}
+
+		$data = $this->request(
+			array (
+				'endpoint' => $endpoint,
+				'method' => 'PATCH',
+				'patch_data' => array (
+					'value' => $setting
+				)
+			)
+		);
+
+		return $data;
+	}
+
 	public function fetch_recent_visitors($type, $time)
 	{
 		$data = array(
@@ -318,22 +344,6 @@ class cloudflare {
 		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(SecurityLevel)');
 
 		print_r($response);
-
-		return $response->result;
-	}
-
-	public function switch_ipv6($status)
-	{
-		$data = array(
-   			"a" => "ipv46",
-        			"zid" => $this->fetch_zid(),
-        			"u" => $this->email,
-        			"tkn" => $this->api_key,
-			"z" => $this->zone,
-			"v" => $status,
-		);
-
-		$response = $this->request($data, 'MyBB/CloudFlare-Plugin(IPv46)');
 
 		return $response->result;
 	}
