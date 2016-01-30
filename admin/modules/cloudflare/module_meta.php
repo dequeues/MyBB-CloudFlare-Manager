@@ -74,16 +74,18 @@ function cloudflare_action_handler($action)
 		'update_snapshot' => array('active' => 'update_snapshot', 'file' => 'cloudflare_update_snapshot.php'),
 		'ipv46' => array('active' => 'ipv46', 'file' => 'cloudflare_ipv46.php'),
 		'topthreats' => array('active' => 'topthreats', 'file' => 'cloudflare_topthreats.php'),
+		'manage_firewall' => array('active' => 'manage_firewall', 'file' => 'cloudflare_manage_firewall.php')
 	);
 
 	$actions = $plugins->run_hooks("admin_cloudflare_action_handler", $actions);
 
 	$sub_menu = array();
 	$sub_menu['Access'] = array(
-		10 => array("id" => "whitelist", "title" => "Whitelist", "link" => "index.php?module=cloudflare-whitelist"),
-		20 => array("id" => "blacklist", "title" => "Blacklist", "link" => "index.php?module=cloudflare-blacklist"),
-		30 => array("id" => "challenge", "title" => "Challenge", "link" => "index.php?module=cloudflare-challenge"),
-		40 => array("id" => "ipv46", "title" => "IPv6 Support", "link" => "index.php?module=cloudflare-ipv46"),
+		10 => array("id" => "manage_firewall", "title" => "Manage Firewall", "link" => "index.php?module=cloudflare-manage_firewall"),
+		20 => array("id" => "whitelist", "title" => "Whitelist", "link" => "index.php?module=cloudflare-whitelist"),
+		30 => array("id" => "blacklist", "title" => "Blacklist", "link" => "index.php?module=cloudflare-blacklist"),
+		40 => array("id" => "challenge", "title" => "Challenge", "link" => "index.php?module=cloudflare-challenge"),
+		50 => array("id" => "ipv46", "title" => "IPv6 Support", "link" => "index.php?module=cloudflare-ipv46"),
 	);
 
 	$sub_menu['Security'] = array (

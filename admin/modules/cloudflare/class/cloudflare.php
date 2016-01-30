@@ -23,16 +23,34 @@ class cloudflare {
 	{
 		$ch = curl_init();
 
-		if (isset($request_data['method']) &&  isset($request_data['post_data']) && $request_data['method'] == 'POST')
+		if (isset($request_data['method']))
 		{
-			curl_setopt($ch, CURLOPT_POST, 1);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['post_data']));
-		}
+			if ($request_data['method'] == 'POST')
+			{
+				curl_setopt($ch, CURLOPT_POST, 1);
+				if (isset($request_data['post_data']))
+				{
+					curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['post_data']));
+				}
+			}
 
-		if (isset($request_data['method']) && isset($request_data['patch_data']) && $request_data['method'] == 'PATCH')
-		{
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
-			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['patch_data']));
+			if ($request_data['method'] == 'PATCH')
+			{
+				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+				if (isset($request_data['patch_data']))
+				{
+					curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['patch_data']));
+				}
+			}
+
+			if ($request_data['method'] == 'DELETE')
+			{
+				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+				if (isset($request_data['delete_data']))
+				{
+					curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['delete_data']));
+				}
+			}
 		}
 
 		$url = $this->api_url . $request_data['endpoint'];
@@ -41,7 +59,6 @@ class cloudflare {
 		{
 			$url = $url . "?". http_build_query($request_data['url_parameters']);
 		}
-
 		curl_setopt($ch, CURLOPT_VERBOSE, 1);
 		curl_setopt($ch, CURLOPT_USERAGENT, "MyBB CloudFlare Manager Plugin");
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -145,7 +162,7 @@ class cloudflare {
 		return $this->update_access_rule("challenge", $ip, $notes);
 	}
 
-	private function update_access_rule($mode, $ip, $notes = '')
+	public function update_access_rule($mode, $ip, $notes = '')
 	{
 		$data = $this->request (
 			array (
@@ -197,6 +214,28 @@ class cloudflare {
 				'patch_data' => array (
 					'value' => $setting
 				)
+			)
+		);
+
+		return $data;
+	}
+
+	public function get_access_rules()
+	{
+		$data = $this->request(
+			array (
+				'endpoint' => "/zones/{$this->zone_id}/firewall/access_rules/rules"
+			)
+		);
+		return $data;
+	}
+
+	public function delete_firewall_rule($rule_id)
+	{
+		$data = $this->request(
+			array (
+				'endpoint' => "/zones/{$this->zone_id}/firewall/access_rules/rules/{$rule_id}",
+				'method' => 'DELETE'
 			)
 		);
 
