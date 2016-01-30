@@ -6,13 +6,15 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-if(get_version() == get_latest_version())
+$latest_version = $cloudflare->get_latest_version();
+
+if(CLOUDFLARE_MANAGER_VERSION == $latest_version)
 {
-	flash_message("Congratulations! You are using the latest version of this plugin (" . get_latest_version() . ").", "success");
+	flash_message('Congratulations! You are using the latest version of this plugin (' . CLOUDFLARE_MANAGER_VERSION . ")", 'success');
 }
 else
 {
-	flash_message("You are not using the latest version of this plugin. You are using " . get_version() . ", and the latest version is " . get_latest_version() . ".", "error");
+	flash_message('You are not using the latest version of this plugin. You are using ' . CLOUDFLARE_MANAGER_VERSION . ', and the latest version is ' . $latest_version, "error");
 }
 
 admin_redirect("index.php?module=cloudflare");
