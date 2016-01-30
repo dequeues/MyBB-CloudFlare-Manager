@@ -28,29 +28,10 @@ class cloudflare {
 			if ($request_data['method'] == 'POST')
 			{
 				curl_setopt($ch, CURLOPT_POST, 1);
-				if (isset($request_data['post_data']))
-				{
-					curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['post_data']));
-				}
 			}
 
-			if ($request_data['method'] == 'PATCH')
-			{
-				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
-				if (isset($request_data['patch_data']))
-				{
-					curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['patch_data']));
-				}
-			}
-
-			if ($request_data['method'] == 'DELETE')
-			{
-				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-				if (isset($request_data['delete_data']))
-				{
-					curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['delete_data']));
-				}
-			}
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $request_data['method']);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($request_data['post_fields']));
 		}
 
 		$url = $this->api_url . $request_data['endpoint'];
@@ -168,7 +149,7 @@ class cloudflare {
 			array (
 				'endpoint' => "zones/{$this->zone_id}/firewall/access_rules/rules",
 				'method' => 'POST',
-				'post_data' => array (
+				'post_fields' => array (
 					'mode' => $mode,
 					'configuration' => array (
 						'target' => 'ip',
@@ -211,7 +192,7 @@ class cloudflare {
 			array (
 				'endpoint' => $endpoint,
 				'method' => 'PATCH',
-				'patch_data' => array (
+				'post_fields' => array (
 					'value' => $setting
 				)
 			)
