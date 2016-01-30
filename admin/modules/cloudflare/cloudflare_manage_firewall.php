@@ -81,7 +81,7 @@ elseif ($mybb->input['action'] == 'delete_rule_by_id')
 
 	if (!empty($request->success))
 	{
-		flash_message("Updated the firewall rule with IP {$mybb->get_input('ip_address')}", "success");
+		flash_message("Deleted the firewall rule with IP {$mybb->get_input('ip_address')}", "success");
 		admin_redirect("index.php?module=cloudflare-manage_firewall");
 	}
 	else
