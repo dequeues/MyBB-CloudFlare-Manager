@@ -50,7 +50,6 @@ function cloudflare_action_handler($action)
 	$actions = array(
 		'overview' => array('active' => 'overview', 'file' => 'cloudflare_overview.php'),
 		'purge_cache' => array('active' => 'purge_cache', 'file' => 'cloudflare_purge_cache.php'),
-		'purge_preloader_cache' => array('active' => 'purge_preloader_cache', 'file' => 'cloudflare_purge_preloader_cache.php'),
 		'dev_mode' => array('active' => 'dev_mode', 'file' => 'cloudflare_dev_mode.php'),
 		'cache_lvl' => array('active' => 'cache_lvl', 'file' => 'cloudflare_cache_lvl.php'),
 		'security_lvl' => array('active' => 'security_lvl', 'file' => 'cloudflare_security_lvl.php'),
@@ -91,7 +90,6 @@ function cloudflare_action_handler($action)
 	$sub_menu['Security'] = array (
 		10 => array("id" => "cache_lvl", "title" => "Cache Level", "link" => "index.php?module=cloudflare-cache_lvl"),
 		20 => array("id" => "purge_cache", "title" => "Purge Cache", "link" => "index.php?module=cloudflare-purge_cache"),
-		30 => array("id" => "purge_preloader_cache", "title" => "Purge Preloader Cache", "link" => "index.php?module=cloudflare-purge_preloader_cache")
 	);
 
 	$sub_menu['Data'] = array (
@@ -325,7 +323,6 @@ function cloudflare_admin_permissions()
 		"topthreats"	=> "Can manage CloudFlare top threats?",
 		"cache_lvl"	=> "Can manage CloudFlare cache level?",
 		"purge_cache"	=> "Can manage CloudFlare purge cache?",
-		"purge_preloader_cache"	=> "Can manage CloudFlare purge preloader cache?",
 		"report_bug"	=> "Can manage CloudFlare report bug?",
 	);
 
