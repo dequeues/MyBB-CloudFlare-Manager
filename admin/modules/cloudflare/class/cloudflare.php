@@ -341,6 +341,32 @@ class cloudflare {
 		return $matches[1];
 	}
 
+	public function security_level_setting($setting = NULL)
+	{
+		$endpoint = "/zones/{$this->zone_id}/settings/security_level";
+		if (is_null($setting))
+		{
+			$data = $this->request(
+				array (
+					'endpoint' => $endpoint
+				)
+			);
+			return $data;
+		}
+
+		$data = $this->request(
+			array (
+				'endpoint' => $endpoint,
+				'method' => 'PATCH',
+				'post_fields' => array (
+					'value' => $setting
+				)
+			)
+		);
+		
+		return $data;
+	}
+
 	public function fetch_recent_visitors($type, $time)
 	{
 		$data = array(
