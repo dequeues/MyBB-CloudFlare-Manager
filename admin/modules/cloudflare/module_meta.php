@@ -65,7 +65,6 @@ function cloudflare_action_handler($action)
 		'dns_active' => array('active' => 'dns_active', 'file' => 'cloudflare_dns_active.php'),
 		'dns_not_active' => array('active' => 'dns_not_active', 'file' => 'cloudflare_dns_not_active.php'),
 		'challenge' => array('active' => 'challenge', 'file' => 'cloudflare_challenge.php'),
-		'change_log' => array('active' => 'change_log', 'file' => 'cloudflare_change_log.php'),
 		'recent_visitors_48' => array('active' => 'recent_visitors_48', 'file' => 'cloudflare_recent_visitors_48.php'),
 		'update_snapshot' => array('active' => 'update_snapshot', 'file' => 'cloudflare_update_snapshot.php'),
 		'ipv46' => array('active' => 'ipv46', 'file' => 'cloudflare_ipv46.php'),
@@ -92,7 +91,6 @@ function cloudflare_action_handler($action)
 	$sub_menu['Cache'] = array (
 		10 => array("id" => "about_plugin", "title" => "About Plugin", "link" => "index.php?module=cloudflare-about_plugin"),
 		20 => array("id" => "check_for_updates", "title" => "Check for Updates", "link" => "index.php?module=cloudflare-check_for_updates"),
-		30 => array("id" => "change_log", "title" => "Change Log", "link" => "index.php?module=cloudflare-change_log"),
 		40 => array("id" => "report_bug", "title" => "Report Bug", "link" => "index.php?module=cloudflare-report_bug")
 	);
 
