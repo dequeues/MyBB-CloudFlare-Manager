@@ -57,9 +57,6 @@ function cloudflare_action_handler($action)
 		'recent_visitors' => array('active' => 'recent_visitors', 'file' => 'cloudflare_recent_visitors.php'),
 		'blacklist' => array('active' => 'blacklist', 'file' => 'cloudflare_blacklist.php'),
 		'whitelist' => array('active' => 'whitelist', 'file' => 'cloudflare_whitelist.php'),
-		'help' => array('active' => 'help', 'file' => 'cloudflare_help.php'),
-		'knowledge_base' => array('active' => 'knowledge_base', 'file' => 'cloudflare_knowledge_base.php'),
-		'website' => array('active' => 'website', 'file' => 'cloudflare_website.php'),
 		'about_plugin' => array('active' => 'about_plugin', 'file' => 'cloudflare_about_plugin.php'),
 		'check_for_updates' => array('active' => 'check_for_updates', 'file' => 'cloudflare_check_for_updates.php'),
 		'report_bug' => array('active' => 'report_bug', 'file' => 'cloudflare_report_bug.php'),
@@ -90,12 +87,6 @@ function cloudflare_action_handler($action)
 	$sub_menu['Security'] = array (
 		10 => array("id" => "cache_lvl", "title" => "Cache Level", "link" => "index.php?module=cloudflare-cache_lvl"),
 		20 => array("id" => "purge_cache", "title" => "Purge Cache", "link" => "index.php?module=cloudflare-purge_cache"),
-	);
-
-	$sub_menu['Data'] = array (
-		10 => array("id" => "website", "title" => "Official Website", "link" => "index.php?module=cloudflare-website"),
-		20 => array("id" => "help", "title" => "Help Page", "link" => "index.php?module=cloudflare-help"),
-		30 => array("id" => "knowledge_base", "title" => "Knowledge Base", "link" => "index.php?module=cloudflare-knowledge_base")
 	);
 
 	$sub_menu['Cache'] = array (
@@ -318,7 +309,6 @@ function cloudflare_admin_permissions()
 		"statistics"	=> "Can manage CloudFlare statistics?",
 		"recent_visitors"	=> "Can manage CloudFlare recent visitors?",
 		"statistics"	=> "Can manage CloudFlare statistics?",
-		"outbound"	=> "Can manage CloudFlare outbound links?",
 		"update_snapshot"	=> "Can manage CloudFlare update snapshot?",
 		"topthreats"	=> "Can manage CloudFlare top threats?",
 		"cache_lvl"	=> "Can manage CloudFlare cache level?",
