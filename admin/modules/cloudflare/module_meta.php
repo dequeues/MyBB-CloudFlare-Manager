@@ -74,7 +74,6 @@ function cloudflare_action_handler($action)
 		'update_snapshot' => array('active' => 'update_snapshot', 'file' => 'cloudflare_update_snapshot.php'),
 		'ipv46' => array('active' => 'ipv46', 'file' => 'cloudflare_ipv46.php'),
 		'topthreats' => array('active' => 'topthreats', 'file' => 'cloudflare_topthreats.php'),
-		'whois' => array('active' => 'whois', 'file' => 'cloudflare_whois.php'),
 	);
 
 	$actions = $plugins->run_hooks("admin_cloudflare_action_handler", $actions);
@@ -85,7 +84,6 @@ function cloudflare_action_handler($action)
 		20 => array("id" => "blacklist", "title" => "Blacklist", "link" => "index.php?module=cloudflare-blacklist"),
 		30 => array("id" => "challenge", "title" => "Challenge", "link" => "index.php?module=cloudflare-challenge"),
 		40 => array("id" => "ipv46", "title" => "IPv6 Support", "link" => "index.php?module=cloudflare-ipv46"),
-		50 => array("id" => "whois", "title" => "Whois Lookup", "link" => "index.php?module=cloudflare-whois")
 	);
 
 	$sub_menu['Security'] = array (
