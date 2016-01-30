@@ -64,7 +64,6 @@ function cloudflare_action_handler($action)
 		'dns_not_active' => array('active' => 'dns_not_active', 'file' => 'cloudflare_dns_not_active.php'),
 		'challenge' => array('active' => 'challenge', 'file' => 'cloudflare_challenge.php'),
 		'ipv46' => array('active' => 'ipv46', 'file' => 'cloudflare_ipv46.php'),
-		'topthreats' => array('active' => 'topthreats', 'file' => 'cloudflare_topthreats.php'),
 		'manage_firewall' => array('active' => 'manage_firewall', 'file' => 'cloudflare_manage_firewall.php')
 	);
 
@@ -92,7 +91,6 @@ function cloudflare_action_handler($action)
 
 	$sub_menu['Security'] = array (
 		10 => array("id" => "security_lvl", "title" => "Security Level", "link" => "index.php?module=cloudflare-security_lvl"),
-		20 => array("id" => "topthreats", "title" => "Top Threats", "link" => "index.php?module=cloudflare-topthreats")
 	);
 
 	if(!isset($actions[$action]))
@@ -128,64 +126,6 @@ function cloudflare_action_handler($action)
 		return "cloudflare_overview.php";
 	}
 
-}
-
-function cloudflare_threat_score($ip)
-{
-	global $mybb;
-
-	$url = "https://www.cloudflare.com/api_json.html";
-
-	$data = array(
-		"a" => "ip_lkup",
-		"u" => $mybb->settings['cloudflare_email'],
-		"z" => $mybb->settings['cloudflare_domain'],
-		"tkn" => $mybb->settings['cloudflare_api'],
-		"ip" => $ip
-	);
-
-	$ch = curl_init();
-
-	curl_setopt($ch, CURLOPT_VERBOSE, 1);
-	curl_setopt($ch, CURLOPT_USERAGENT, "MyBB/CloudFlare-Plugin(ThreatScore)");
-	curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
-	curl_setopt($ch, CURLOPT_URL, $url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-	$http_result = curl_exec($ch);
-	$error = curl_error($ch);
-
-	$http_code = curl_getinfo($ch ,CURLINFO_HTTP_CODE);
-
-	curl_close($ch);
-
-	if($http_code != 200)
-	{
-		echo "Error: $error\n";
-	}
-	else
-	{
-		$json = json_decode($http_result);
-		//die("<div id='debug'>" . print_r(objectToArray($json)) . "</div>");
-
-		$data = objectToArray($json->response);
-
-		if(!$data[$ip])
-		{
-			return 'None';
-		}
-
-		$replace = array('BAD:', 'CLEAN:', 'SE:');
-		$with = array('', '', '');
-
-		$result = str_replace($replace, $with, $data[$ip]);
-
-		return $result;
-   }
 }
 
 function cloudflare_security_level()
@@ -294,7 +234,6 @@ function cloudflare_admin_permissions()
 		"whitelist"		=> "Can manage CloudFlare whitelist?",
 		"challenge"		=> "Can manage CloudFlare challenge?",
 		"ipv46"			=> "Can manage CloudFlare IPv46?",
-		"topthreats"	=> "Can manage CloudFlare top threats?",
 		"cache_lvl"	=> "Can manage CloudFlare cache level?",
 		"purge_cache"	=> "Can manage CloudFlare purge cache?",
 		"report_bug"	=> "Can manage CloudFlare report bug?",
@@ -305,24 +244,6 @@ function cloudflare_admin_permissions()
 	return array("name" => "CloudFlare Manager", "permissions" => $admin_permissions, "disporder" => 60);
 }
 
-function threatscore2color($score)
-{
-	switch(true)
-	{
-	       case ($score > 49):
-                        return '#CC0000';
-                  break;
-	       case ($score > 24):
-                        return '#F3611B';
-                  break;
-	       case ($score > 9):
-                        return '#AE5700';
-                  break;
-                   default:
-                        return '';
-                  break;
-	}
-}
 
 function local_whois_available()
 {
