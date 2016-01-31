@@ -26,7 +26,7 @@ if(!$mybb->input['action'])
 	$table->construct_row();
 
 	$table->construct_cell("<strong>Release Date</strong>", array('width' => '200'));
-	$table->construct_cell("December 20 2012", array('width' => '200'));
+	$table->construct_cell("January 31, 2016", array('width' => '200'));
 	$table->construct_row();
 
 	$table->construct_cell("<strong>Compatibility</strong>", array('width' => '200'));
