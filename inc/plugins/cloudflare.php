@@ -31,7 +31,7 @@ function cloudflare_info()
 		'website'		=> 'http://www.mybbsecurity.net/',
 		'author'		=> 'MyBB Security Group',
 		'authorsite'	=> 'http://www.mybbsecurity.net/',
-		'version'		=> CLOUDFLARE_MANAGER_VERSION
+		'version'		=> CLOUDFLARE_MANAGER_VERSION,
 		"compatibility" => '18*'
 	);
 }
