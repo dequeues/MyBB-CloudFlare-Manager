@@ -108,7 +108,7 @@ function cloudflare_action_handler($action)
 
 	if (!$cache->read('cloudflare_zone_id'))
 	{
-		$zone_id = get_cloudflare_zone_id();
+		$zone_id = $this->get_cloudflare_zone_id();
 		if (isset($zone_id['error']))
 		{
 			$page->active_action = "overview";

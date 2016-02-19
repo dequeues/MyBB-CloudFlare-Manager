@@ -99,7 +99,7 @@ class cloudflare {
 			array(
 				'endpoint' => 'zones',
 				'url_parameters' => array (
-					'name' => $this->zone['cloudflare_domain']
+					'name' => $this->zone
 				)
 			)
 		);
@@ -126,7 +126,7 @@ class cloudflare {
 		if(is_object($d)) {
 			$d = get_object_vars($d);
 		}
-		
+
 		if(is_array($d)) {
 			return array_map(array($this, 'objectToArray'), $d); // recursive
 		} else {
@@ -363,7 +363,7 @@ class cloudflare {
 				)
 			)
 		);
-		
+
 		return $data;
 	}
 }
