@@ -15,9 +15,11 @@ $cloudflare = new cloudflare($mybb, $zone_id);
 function cloudflare_meta()
 {
 	global $mybb, $page, $plugins, $cache, $cloudflare;
-	if($mybb->input['module'] == 'cloudflare')
+	require_once(MYBB_ROOT . "inc/plugins/cloudflare.php");
+
+	if ($mybb->input['module'] == 'cloudflare')
 	{
-		if(cloudflare_is_installed() == false)
+		if (!cloudflare_is_installed())
 		{
 			flash_message('CloudFlare Manager hasn\'t been installed. Please install it before continuing.', 'error');
 			admin_redirect("index.php?module=config-plugins");
@@ -36,9 +38,12 @@ function cloudflare_meta()
 
 	$sub_menu = $plugins->run_hooks("admin_cloudflare_menu", $sub_menu);
 
-	$page->add_menu_item("CloudFlare Manager", "cloudflare", "index.php?module=cloudflare", 60, $sub_menu);
-
-	return true;
+	if (cloudflare_is_installed() && isset($mybb->settings['cloudflare_domain']))
+	{
+//		$page->add_menu_item("CloudFlare Manager", "cloudflare", "index.php?module=cloudflare", 60, $sub_menu);
+		return true;
+	}
+	return false;
 }
 
 function cloudflare_action_handler($action)

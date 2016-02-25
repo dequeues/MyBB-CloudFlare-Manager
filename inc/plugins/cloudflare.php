@@ -152,6 +152,8 @@ function cloudflare_activate()
 	$db->insert_query("templates", $insert_array);
 
 	change_admin_permission("cloudflare", "", 1);
+
+	rebuild_settings();
 }
 
 function cloudflare_deactivate()
@@ -168,6 +170,8 @@ function cloudflare_deactivate()
 	$db->delete_query("templates", "title = 'cloudflare_postbit_spam'");
 
 	change_admin_permission("cloudflare", "", -1);
+
+	rebuild_settings();
 }
 
 function cloudflare_is_installed()
