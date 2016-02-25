@@ -21,7 +21,7 @@ if(!$mybb->input['action'])
 		$zone_id = $cloudflare->get_cloudflare_zone_id();
 		if (isset($zone_id['error']))
 		{
-			flash_message("Could not get zone ID: {$zone_id['error']}", "error");
+			$page->output_inline_error($zone_id['error']);
 			die();
 		}
 
