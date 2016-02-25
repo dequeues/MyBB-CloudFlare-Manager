@@ -103,9 +103,17 @@ class cloudflare {
 				)
 			)
 		);
-		$this->zone_id = $data->result[0]->id;
-		$cache->update('cloudflare_zone_id', $data->result[0]->id);
-		return (isset($data->result[0]->id) ? array("zone_id" => $data->result[0]->id) : array("error" => $data->errors[0]->message));
+
+		if (is_null($data) || sizeof($data->errors) > 0)
+		{
+			return array('errors' => $this->get_all_errors($data));
+		}
+		else
+		{
+			$this->zone_id = $data->result[0]->id;
+			$cache->update('cloudflare_zone_id', $data->result[0]->id);
+			return $data->result[0]->id;
+		}
 	}
 
 	public function dns_status()
@@ -365,5 +373,18 @@ class cloudflare {
 		);
 
 		return $data;
+	}
+
+	public function get_all_errors($raw)
+	{
+		$errors = array();
+		if (is_array($raw->errors))
+		{
+			foreach ($raw->errors as $error)
+			{
+				$errors[] = $error->message;
+			}
+		}
+		return $errors;
 	}
 }

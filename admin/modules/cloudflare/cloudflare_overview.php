@@ -19,9 +19,9 @@ if(!$mybb->input['action'])
 	if (!$cache->read('cloudflare_zone_id'))
 	{
 		$zone_id = $cloudflare->get_cloudflare_zone_id();
-		if (isset($zone_id['error']))
+		if (isset($zone_id['errors']))
 		{
-			$page->output_inline_error($zone_id['error']);
+			$page->output_inline_error($zone_id['errors']);
 			die();
 		}
 
