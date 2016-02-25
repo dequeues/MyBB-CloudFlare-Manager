@@ -10,7 +10,7 @@ $page->add_breadcrumb_item("CloudFlare Manager", "index.php?module=cloudflare");
 $page->add_breadcrumb_item("Cache Level", "index.php?module=cloudflare-cache_lvl");
 $page->output_header("CloudFlare Manager - Cache Level");
 
-function main_page($current_cache_level, $modified_on)
+function main_page($current_cache_level)
 {
 	$form = new Form('index.php?module=cloudflare-cache_lvl&amp;action=change', 'post');
 	$form_container = new FormContainer('Modify Cache Level');
@@ -32,7 +32,6 @@ function main_page($current_cache_level, $modified_on)
 }
 
 $errors = [];
-$dn = '';
 if ($mybb->input['action'] == 'change')
 {
 	if(!verify_post_check($mybb->input['my_post_key']))
@@ -42,9 +41,9 @@ if ($mybb->input['action'] == 'change')
 	}
 
 	$request = $cloudflare->cache_level($mybb->get_input('cache_level'));
+	
 	if ($request->success)
 	{
-		$dn = $cloudflare->get_readable_dt(date());
 		$page->output_success("Cache level is now as {$mybb->get_input('cache_level')}");
 	}
 	else
@@ -52,22 +51,22 @@ if ($mybb->input['action'] == 'change')
 		$errors[] = $request->errors[0]->message;
 		$page->output_error($request->errors[0]->message);
 	}
+
 }
 
 if (!isset($mybb->input['cache_level']) && empty($errors))
 {
 	$request = $cloudflare->cache_level();
 	$current_cache_level = $request->result->value;
-	$dn = $cloudflare->get_readable_dt($request->result->modified_on);
 }
 else
 {
 	$current_cache_level = $mybb->input['cache_level'];
 }
 
-$page->output_alert("The cache level is currently set to {$current_cache_level} (Modified on: {$dn})");
+$page->output_alert("The cache level is currently set to {$current_cache_level}");
 
-main_page($current_cache_level, $dn);
+main_page($current_cache_level);
 
 $page->output_footer();
 

@@ -106,9 +106,7 @@ class cloudflare {
 
 		if (is_null($data) || sizeof($data->errors) > 0)
 		{
-			$errors = $this->get_all_errors($data);
-			$errors[] = "Check your API options are correct in settings";
-			return array('errors' => $errors);
+			return array('errors' => $this->get_all_errors($data));
 		}
 		else
 		{
@@ -388,10 +386,5 @@ class cloudflare {
 			}
 		}
 		return $errors;
-	}
-
-	public function get_readable_dt($dts)
-	{
-		return date_format(date_create($dts), 'Y-m-d H:i:s');
 	}
 }
