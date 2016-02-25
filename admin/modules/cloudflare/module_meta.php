@@ -43,7 +43,7 @@ function cloudflare_meta()
 
 function cloudflare_action_handler($action)
 {
-	global $page, $plugins, $cache;
+	global $page, $plugins, $cache, $cloudflare;
 
 	$page->active_module = "cloudflare";
 
@@ -108,7 +108,7 @@ function cloudflare_action_handler($action)
 
 	if (!$cache->read('cloudflare_zone_id'))
 	{
-		$zone_id = $this->get_cloudflare_zone_id();
+		$zone_id = $cloudflare->get_cloudflare_zone_id();
 		if (isset($zone_id['error']))
 		{
 			$page->active_action = "overview";
