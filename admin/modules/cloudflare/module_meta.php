@@ -38,9 +38,9 @@ function cloudflare_meta()
 
 	$sub_menu = $plugins->run_hooks("admin_cloudflare_menu", $sub_menu);
 
-	if (cloudflare_is_installed() && isset($mybb->settings['cloudflare_domain']))
+	if (cloudflare_is_installed() && (!isset($mybb->settings['cloudflare_domain']) || !empty($mybb->settings['cloudflare_api'])))
 	{
-//		$page->add_menu_item("CloudFlare Manager", "cloudflare", "index.php?module=cloudflare", 60, $sub_menu);
+		$page->add_menu_item("CloudFlare Manager", "cloudflare", "index.php?module=cloudflare", 60, $sub_menu);
 		return true;
 	}
 	return false;

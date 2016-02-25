@@ -51,12 +51,10 @@ function cloudflare_install()
 	$cache->update("cloudflare_calls", 1200);
 
 	$setting_group = array(
-		"gid" => "NULL",
 		"name" => "cloudflare",
 		"title" => "CloudFlare Manager",
 		"description" => "Configures options for the CloudFlare Manager plugin.",
 		"disporder" => "1",
-		"isdefault" => "0",
 	);
 
 	$gid = $db->insert_query("settinggroups", $setting_group);
@@ -85,7 +83,7 @@ function cloudflare_install()
 			"title"			=> "API Key",
 			"description"	=> "Your CloudFlare API key. You can get this key <a href=\"https://www.cloudflare.com/a/account/my-account\">here</a>",
 			"optionscode"	=> "text",
-			"value"			=> 123456789,
+			"value"			=> "",
 			"disporder"		=> ++$dispnum
 		),
 		"cloudflare_postbit_spam" => array(
@@ -151,8 +149,6 @@ function cloudflare_activate()
 
 	$db->insert_query("templates", $insert_array);
 
-	change_admin_permission("cloudflare", "", 1);
-
 	rebuild_settings();
 }
 
@@ -168,8 +164,6 @@ function cloudflare_deactivate()
 	find_replace_templatesets('footer', '#<!-- End powered by --><cfb>#', '<!-- End powered by -->');
 
 	$db->delete_query("templates", "title = 'cloudflare_postbit_spam'");
-
-	change_admin_permission("cloudflare", "", -1);
 
 	rebuild_settings();
 }
@@ -191,7 +185,6 @@ function cloudflare_uninstall()
 {
 	global $db;
 
-	$db->query("DROP TABLE IF EXISTS` ".TABLE_PREFIX."cloudflare");
 	$db->query("DELETE FROM ".TABLE_PREFIX."settinggroups WHERE name='cloudflare'");
 	$db->query("DELETE FROM ".TABLE_PREFIX."settings WHERE name LIKE 'cloudflare_%'");
 
