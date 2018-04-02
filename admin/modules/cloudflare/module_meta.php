@@ -38,7 +38,7 @@ function cloudflare_meta()
 
 	$sub_menu = $plugins->run_hooks("admin_cloudflare_menu", $sub_menu);
 
-	if (cloudflare_is_installed() && (!isset($mybb->settings['cloudflare_domain']) || !empty($mybb->settings['cloudflare_api'])))
+	if (cloudflare_is_installed())
 	{
 		$page->add_menu_item("CloudFlare Manager", "cloudflare", "index.php?module=cloudflare", 60, $sub_menu);
 		return true;
@@ -48,7 +48,13 @@ function cloudflare_meta()
 
 function cloudflare_action_handler($action)
 {
-	global $page, $plugins, $cache, $cloudflare;
+	global $page, $plugins, $cache, $cloudflare, $mybb;
+
+	if (empty($mybb->settings['cloudflare_domain']) || empty($mybb->settings['cloudflare_api'])) {
+		flash_message("Cloudflare domain and API must be set.", 'error');
+		admin_redirect("index.php?module=config-plugins");
+		exit;
+	}
 
 	$page->active_module = "cloudflare";
 

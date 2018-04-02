@@ -96,7 +96,7 @@ if(!$mybb->input['action'])
 	$table->construct_cell("<strong>API Key</strong>", array('width' => '200'));
 	$table->construct_cell(htmlspecialchars_uni($mybb->settings['cloudflare_api']), array('width' => '200'));
 	$table->construct_cell("<strong>CloudFlare Settings</strong>", array('width' => '25%'));
-	$table->construct_cell("<a href=\"https://www.cloudflare.com/cloudflare-settings.html?z=" . $mybb->settings['cloudflare_domain'] . "\" target=\"_blank\">View/Modify</a>", array('width' => '25%'));
+	$table->construct_cell("<a href=\"https://www.cloudflare.com/a/overview/" . $mybb->settings['cloudflare_domain'] . "\" target=\"_blank\">View/Modify</a>", array('width' => '25%'));
 	$table->construct_row();
 
 	$table->output("General Information");
