@@ -15,11 +15,12 @@ class cloudflare {
 	public $zone_id;
 
 	public function __construct(MyBB $mybb, $zone_id) {
+		global $cache;
 		$this->zone = $mybb->settings['cloudflare_domain'];
 		$this->api_key = $mybb->settings['cloudflare_api'];
 		$this->email = $mybb->settings['cloudflare_email'];
 		$this->zone_id = $zone_id;
-		if (!$zone_id)
+		if (!$zone_id || !$cache->read('cloudflare_account_id'))
 		{
 			$this->get_cloudflare_zone_id();
 		}
@@ -114,6 +115,7 @@ class cloudflare {
 		{
 			$this->zone_id = $data->result[0]->id;
 			$cache->update('cloudflare_zone_id', $data->result[0]->id);
+			$cache->update('cloudflare_account_id', $data->result[0]->account->id);
 			return $data->result[0]->id;
 		}
 	}
