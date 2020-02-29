@@ -237,7 +237,7 @@ class cloudflare {
 
 	public function ipv46_setting($setting = NULL)
 	{
-		$endpoint = "/zones/{$this->zone_id}/settings/ipv6";
+		$endpoint = "zones/{$this->zone_id}/settings/ipv6";
 
 		if (is_null($setting))
 		{
@@ -266,7 +266,7 @@ class cloudflare {
 	{
 		$data = $this->request(
 			array (
-				'endpoint' => "/zones/{$this->zone_id}/firewall/access_rules/rules"
+				'endpoint' => "zones/{$this->zone_id}/firewall/access_rules/rules"
 			)
 		);
 		return $data;
@@ -276,7 +276,7 @@ class cloudflare {
 	{
 		$data = $this->request(
 			array (
-				'endpoint' => "/zones/{$this->zone_id}/firewall/access_rules/rules/{$rule_id}",
+				'endpoint' => "zones/{$this->zone_id}/firewall/access_rules/rules/{$rule_id}",
 				'method' => 'DELETE'
 			)
 		);
@@ -286,7 +286,7 @@ class cloudflare {
 
 	public function cache_level($setting = NULL)
 	{
-		$endpoint = "/zones/{$this->zone_id}/settings/cache_level";
+		$endpoint = "zones/{$this->zone_id}/settings/cache_level";
 
 		if (is_null($setting))
 		{
@@ -312,7 +312,7 @@ class cloudflare {
 
 	public function purge_cache($urls = NULL)
 	{
-		$endpoint = "/zones/{$this->zone_id}/purge_cache";
+		$endpoint = "zones/{$this->zone_id}/purge_cache";
 
 		if (is_null($files))
 		{
@@ -352,7 +352,7 @@ class cloudflare {
 
 	public function security_level_setting($setting = NULL)
 	{
-		$endpoint = "/zones/{$this->zone_id}/settings/security_level";
+		$endpoint = "zones/{$this->zone_id}/settings/security_level";
 		if (is_null($setting))
 		{
 			$data = $this->request(
