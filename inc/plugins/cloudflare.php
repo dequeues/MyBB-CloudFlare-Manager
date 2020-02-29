@@ -8,7 +8,7 @@ if(!defined("IN_MYBB"))
 
 $plugins->add_hook('pre_output_page', 'cloudflare_backlink');
 
-define('CLOUDFLARE_MANAGER_VERSION', '2.1.1-stable');
+define('CLOUDFLARE_MANAGER_VERSION', '2.2-stable');
 
 function cloudflare_info()
 {
