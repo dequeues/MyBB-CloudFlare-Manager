@@ -395,4 +395,30 @@ class cloudflare {
 	{
 		return date_format(date_create($dts), 'Y-m-d H:i:s');
 	}
+
+	public function get_formatted_size_by_bytes($bytes)
+	{
+		if ($bytes >= 1048576)
+		{
+			$bytes = number_format($bytes / 1048576, 2) . ' MB';
+		}
+		elseif ($bytes >= 1024)
+        {
+            $bytes = number_format($bytes / 1024, 2) . ' KB';
+		}
+		elseif ($bytes > 1)
+        {
+            $bytes = $bytes . ' bytes';
+        }
+        elseif ($bytes == 1)
+        {
+            $bytes = $bytes . ' byte';
+		}
+		else
+		{
+			$bytes = 0;
+		}
+
+		return $bytes;
+	}
 }

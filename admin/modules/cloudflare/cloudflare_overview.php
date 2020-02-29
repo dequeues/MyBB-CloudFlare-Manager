@@ -58,8 +58,8 @@ if(!$mybb->input['action'])
 		'pageviews' => $today_request->result->totals->pageviews->all,
 		'uniques' => $today_request->result->totals->uniques->all,
 		'threats' => $today_request->result->totals->threats->all,
-		'bandwidth' => $today_request->result->totals->bandwidth->all,
-		'bandwidth_cached' => $today_request->result->totals->bandwidth->cached
+		'bandwidth' => $cloudflare->get_formatted_size_by_bytes($today_request->result->totals->bandwidth->all),
+		'bandwidth_cached' => $cloudflare->get_formatted_size_by_bytes($today_request->result->totals->bandwidth->cached)
 	);
 
 	$week_request = $cloudflare->get_statistics(-10080);
@@ -67,8 +67,8 @@ if(!$mybb->input['action'])
 		'pageviews' => $week_request->result->totals->pageviews->all,
 		'uniques' => $week_request->result->totals->uniques->all,
 		'threats' => $week_request->result->totals->threats->all,
-		'bandwidth' => $week_request->result->totals->bandwidth->all,
-		'bandwidth_cached' => $week_request->result->totals->bandwidth->cached
+		'bandwidth' => $cloudflare->get_formatted_size_by_bytes($week_request->result->totals->bandwidth->all),
+		'bandwidth_cached' => $cloudflare->get_formatted_size_by_bytes($week_request->result->totals->bandwidth->cached)
 	);
 
 	$table = new Table;
